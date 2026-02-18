@@ -10,23 +10,22 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production' 
-             ? 'https://iibs-absence-back.onrender.com' 
-             : 'http://localhost:3000',
-        description: 'Serveur principal',
+        url: 'https://iibs-absence-back.onrender.com', // Ton URL Render
+        description: 'Serveur Production',
+      },
+      {
+        url: 'http://localhost:3000',
+        description: 'Serveur Local',
       },
     ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-      },
-    },
   },
-  apis: ['./src/router/*.ts', './src/dto/*.ts'], // Chemin vers tes fichiers de routes
+  // CRUCIAL : On ajoute le chemin vers "dist" pour Render
+  apis: [
+    './src/router/*.ts', 
+    './dist/router/*.js',
+    './src/dto/*.ts',
+    './dist/dto/*.js'
+  ], 
 };
 
 export const specs = swaggerJsdoc(options);
