@@ -9,7 +9,8 @@ const service = new ClasseService(repository)
 
 export class ClasseController {
 
-  static async create(req: Request, res: Response) {
+  // RETIRER 'static' ICI
+  async create(req: Request, res: Response) {
     try {
       const data = createClasseSchema.parse(req.body)
       const result = await service.create(data)
@@ -19,7 +20,8 @@ export class ClasseController {
     }
   }
 
-  static async findAll(req: Request, res: Response) {
+  // RETIRER 'static' ICI
+  async findAll(req: Request, res: Response) {
     try {
       const result = await service.findAll()
       return successResponse(res, result)

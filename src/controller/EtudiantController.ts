@@ -1,19 +1,17 @@
 import { Request, Response } from "express"
 import { EtudiantService } from "../service/EtudiantService"
-import { EtudiantRepository } from "../repository/EtudiantRepository"      // AJOUTÉ
-import { UserRepository } from "../repository/UserRepository"              // AJOUTÉ
-import { ClasseRepository } from "../repository/ClasseRepository"          // AJOUTÉ
-import { InscriptionRepository } from "../repository/InscriptionRepository" // AJOUTÉ
+import { EtudiantRepository } from "../repository/EtudiantRepository"
+import { UserRepository } from "../repository/UserRepository"
+import { ClasseRepository } from "../repository/ClasseRepository"
+import { InscriptionRepository } from "../repository/InscriptionRepository"
 import { createEtudiantSchema, inscriptionSchema } from "../dto/etudiant.dto"
 import { successResponse, errorResponse } from "../utils/response"
 
-// 1. On instancie les 4 repositories nécessaires
 const etudiantRepo = new EtudiantRepository()
 const userRepo = new UserRepository()
 const classeRepo = new ClasseRepository()
 const inscriptionRepo = new InscriptionRepository()
 
-// 2. On les injecte dans le service (Règle l'erreur des 4 arguments)
 const service = new EtudiantService(
   etudiantRepo, 
   userRepo, 
@@ -23,7 +21,8 @@ const service = new EtudiantService(
 
 export class EtudiantController {
 
-  static async create(req: Request, res: Response) {
+  // RETIRER 'static' ICI
+  async create(req: Request, res: Response) {
     try {
       const data = createEtudiantSchema.parse(req.body)
       const result = await service.create(data)
@@ -33,7 +32,8 @@ export class EtudiantController {
     }
   }
 
-  static async inscrire(req: Request, res: Response) {
+  // RETIRER 'static' ICI
+  async inscrire(req: Request, res: Response) {
     try {
       const data = inscriptionSchema.parse(req.body)
       const result = await service.inscrire(

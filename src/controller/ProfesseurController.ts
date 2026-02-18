@@ -14,7 +14,7 @@ const service = new ProfesseurService(profRepo, userRepo)
 
 export class ProfesseurController {
 
-  static async create(req: Request, res: Response) {
+   async create(req: Request, res: Response) {
     try {
       const data = createProfesseurSchema.parse(req.body)
       const result = await service.create(data)
