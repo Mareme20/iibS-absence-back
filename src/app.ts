@@ -11,9 +11,9 @@ export const app = express()
 
 app.use(cors())
 app.use(express.json())
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/api/auth", authRouter)
 app.use("/api/classes", classeRouter)
 app.use("/api/cours", coursRouter)
 app.use("/api/etudiants", etudiantRouter)
 app.use("/api/stats", statsRouter)
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
