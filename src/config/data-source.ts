@@ -9,6 +9,7 @@ import { Etudiant } from "../entity/Etudiant"
 import { Inscription } from "../entity/Inscription"
 import { Absence } from "../entity/Absence"
 import { Justification } from "../entity/Justification"
+import { Professeur } from "../entity/Professeur"
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -18,8 +19,9 @@ export const AppDataSource = new DataSource({
   password: String(process.env.DB_PASSWORD || "postgres"), // Le String() est crucial ici
   database: String(process.env.DB_NAME || "iibs_absence"),
   synchronize: true,
+    dropSchema: true, // <--- AJOUTE CETTE LIGNE TEMPORAIREMENT
   logging: false,
-  entities: [User, Classe, Cours, Etudiant, Inscription, Absence, Justification],
+  entities: [User, Classe, Cours, Etudiant, Inscription, Absence,Professeur, Justification],
    migrations: [],
   subscribers: [],
     ssl: { rejectUnauthorized: false }, // Nécessaire pour Neon/Render
