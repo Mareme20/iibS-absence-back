@@ -1,50 +1,26 @@
-import { Request, Response } from "express"
-import { AuthService } from "../service/AuthService"
-import { UserRepository } from "../repository/UserRepository"
-import { registerSchema, loginSchema } from "../dto/auth.dto"
-
-const userRepository = new UserRepository()
-const authService = new AuthService(userRepository)
+import { Request, Response } from "express";
+import { AuthService } from "../service/AuthService";
 
 export class AuthController {
+  // On définit le constructeur pour accepter le service (Règle l'erreur 0 vs 1 argument)
+  constructor(private authService: AuthService) {}
 
-  static async register(req: Request, res: Response) {
+  // Utilisation de fonctions fléchées pour préserver le contexte 'this'
+  register = async (req: Request, res: Response) => {
     try {
-
-      const data = registerSchema.parse(req.body)
-
-      const user = await authService.register(data)
-
-      return res.status(201).json({
-        success: true,
-        data: user
-      })
-
+      const user = await this.authService.register(req.body);
+      return res.status(201).json(user);
     } catch (error: any) {
-      return res.status(400).json({
-        success: false,
-        message: error.message
-      })
+      return res.status(400).json({ message: error.message });
     }
-  }
+  };
 
-  static async login(req: Request, res: Response) {
+  login = async (req: Request, res: Response) => {
     try {
-
-      const data = loginSchema.parse(req.body)
-
-      const result = await authService.login(data)
-
-      return res.status(200).json({
-        success: true,
-        data: result
-      })
-
+      const result = await this.authService.login(req.body);
+      return res.json(result);
     } catch (error: any) {
-      return res.status(400).json({
-        success: false,
-        message: error.message
-      })
+      return res.status(401).json({ message: error.message });
     }
-  }
+  };
 }
