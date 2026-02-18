@@ -1,8 +1,11 @@
 import { Request, Response } from "express"
 import { StatsService } from "../service/StatsService"
+import { StatsRepository } from "../repository/StatsRepository" // Ajouté
 import { successResponse, errorResponse } from "../utils/response"
 
-const service = new StatsService()
+// On injecte l'implémentation concrète (Repository) dans le service (Clean Architecture)
+const repository = new StatsRepository()
+const service = new StatsService(repository)
 
 export class StatsController {
 

@@ -1,30 +1,31 @@
-import { AppDataSource } from "../config/data-source"
-import { Absence } from "../entity/Absence"
-import { Etudiant } from "../entity/Etudiant"
-import { Cours } from "../entity/Cours"
+import { IAbsenceRepository } from "../repository/interfaces/IAbsenceRepository";
+import { IEtudiantRepository } from "../repository/interfaces/IEtudiantRepository";
+import { ICoursRepository } from "../repository/interfaces/ICoursRepository";
+import { Absence } from "../entity/Absence";
 
 export class AbsenceService {
+  constructor(
+    private absenceRepo: IAbsenceRepository,
+    private etudiantRepo: IEtudiantRepository,
+    private coursRepo: ICoursRepository
+  ) {}
 
-  async create(data: any) {
+  async create(data: any): Promise<Absence> {
+    // 1. Recherche des entités via les repositories
+    const etudiant = await this.etudiantRepo.findById(data.etudiantId);
+    const cours = await this.coursRepo.findById(data.coursId);
 
-    const absenceRepo = AppDataSource.getRepository(Absence)
-    const etudiantRepo = AppDataSource.getRepository(Etudiant)
-    const coursRepo = AppDataSource.getRepository(Cours)
-
-    const etudiant = await etudiantRepo.findOne({ where: { id: data.etudiantId } })
-    const cours = await coursRepo.findOne({ where: { id: data.coursId } })
-
+    // 2. Logique métier : Validation
     if (!etudiant || !cours) {
-      throw new Error("Etudiant or Cours not found")
+      throw new Error("Etudiant or Cours not found");
     }
 
-    const absence = absenceRepo.create({
+    // 3. Création de l'absence
+    return await this.absenceRepo.create({
       date: new Date(data.date),
       nombreHeures: data.nombreHeures,
       etudiant,
       cours
-    })
-
-    return await absenceRepo.save(absence)
+    });
   }
 }

@@ -5,12 +5,16 @@ import { authorizeRoles } from "../middleware/role.middleware"
 import { UserRole } from "../entity/User"
 
 const router = Router()
+// Création de l'instance du contrôleur
+const absenceController = new AbsenceController()
 
 router.post(
   "/",
   authMiddleware,
   authorizeRoles(UserRole.PROF),
-  AbsenceController.create
+  // Utilisation de l'instance avec .bind(absenceController) 
+  // pour ne pas perdre le contexte "this"
+  (req, res) => absenceController.create(req, res)
 )
 
 export default router

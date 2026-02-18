@@ -1,58 +1,50 @@
-import bcrypt from "bcryptjs"
-import { AppDataSource } from "../config/data-source"
-import { User, UserRole } from "../entity/User"
-import { Classe } from "../entity/Classe"
-import { Etudiant } from "../entity/Etudiant"
-import { Inscription } from "../entity/Inscription"
-import { createEtudiantSchema } from "../dto/etudiant.dto"
+import bcrypt from "bcryptjs";
+import { UserRole } from "../entity/User";
+import { IEtudiantRepository } from "../repository/interfaces/IEtudiantRepository";
+import { IUserRepository } from "../repository/interfaces/IUserRepository";
+import { IClasseRepository } from "../repository/interfaces/IClasseRepository";
+import { IInscriptionRepository } from "../repository/interfaces/IInscriptionRepository";
 
 export class EtudiantService {
+  constructor(
+    private etudiantRepo: IEtudiantRepository,
+    private userRepo: IUserRepository,
+    private classeRepo: IClasseRepository,
+    private inscriptionRepo: IInscriptionRepository
+  ) {}
 
   async create(data: any) {
+    const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const userRepo = AppDataSource.getRepository(User)
-    const etudiantRepo = AppDataSource.getRepository(Etudiant)
-
-    const hashedPassword = await bcrypt.hash(data.password, 10)
-
-    const user = userRepo.create({
+    // 1. Créer l'utilisateur d'abord
+    const user = await this.userRepo.create({
       nom: data.nom,
       prenom: data.prenom,
       email: data.email,
       password: hashedPassword,
       role: UserRole.ETUDIANT
-    })
+    });
 
-    await userRepo.save(user)
-
-    const etudiant = etudiantRepo.create({
+    // 2. Créer l'étudiant lié à l'utilisateur
+    return await this.etudiantRepo.create({
       matricule: data.matricule,
       adresse: data.adresse,
-      user
-    })
-
-    return await etudiantRepo.save(etudiant)
+      user: user
+    });
   }
 
   async inscrire(etudiantId: number, classeId: number, annee: string) {
-
-    const etudiantRepo = AppDataSource.getRepository(Etudiant)
-    const classeRepo = AppDataSource.getRepository(Classe)
-    const inscriptionRepo = AppDataSource.getRepository(Inscription)
-
-    const etudiant = await etudiantRepo.findOne({ where: { id: etudiantId } })
-    const classe = await classeRepo.findOne({ where: { id: classeId } })
+    const etudiant = await this.etudiantRepo.findById(etudiantId);
+    const classe = await this.classeRepo.findById(classeId);
 
     if (!etudiant || !classe) {
-      throw new Error("Etudiant or Classe not found")
+      throw new Error("Etudiant or Classe not found");
     }
 
-    const inscription = inscriptionRepo.create({
+    return await this.inscriptionRepo.create({
       etudiant,
       classe,
       annee
-    })
-
-    return await inscriptionRepo.save(inscription)
+    });
   }
 }

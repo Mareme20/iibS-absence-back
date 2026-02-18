@@ -19,4 +19,7 @@ export class ClasseRepository implements IClasseRepository {
   async findAll(): Promise<Classe[]> {
     return await this.repo.find()
   }
+    async findById(id: number): Promise<Classe | null> {
+    return await this.repo.findOne({ where: { id } });
+  }
 }

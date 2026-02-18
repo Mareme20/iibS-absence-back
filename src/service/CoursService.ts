@@ -1,34 +1,31 @@
-import { ICoursRepository } from "../repository/interfaces/ICoursRepository"
-import { AppDataSource } from "../config/data-source"
-import { User } from "../entity/User"
-import { Classe } from "../entity/Classe"
-import { CreateCoursDto } from "../dto/cours.dto"
+import { ICoursRepository } from "../repository/interfaces/ICoursRepository";
+import { IProfesseurRepository } from "../repository/interfaces/IProfesseurRepository"; // CHANGE ICI
+import { IClasseRepository } from "../repository/interfaces/IClasseRepository";
+import { CreateCoursDto } from "../dto/cours.dto";
 
 export class CoursService {
-
-  constructor(private coursRepository: ICoursRepository) {}
+  constructor(
+    private coursRepository: ICoursRepository,
+    private professeurRepository: IProfesseurRepository, // UTILISE LE REPO PROFESSEUR
+    private classeRepository: IClasseRepository
+  ) {}
 
   async create(data: CreateCoursDto) {
-
-    const userRepo = AppDataSource.getRepository(User)
-    const classeRepo = AppDataSource.getRepository(Classe)
-
-    const professeur = await userRepo.findOne({
-      where: { id: data.professeurId }
-    })
+    // On cherche dans la table Professeur (qui contient l'id, la spécialité ET le user lié)
+    const professeur = await this.professeurRepository.findById(data.professeurId);
 
     if (!professeur) {
-      throw new Error("Professeur not found")
+      throw new Error("Professeur not found");
     }
 
-    const classes = await classeRepo.findByIds(data.classeIds)
+    // Récupération des classes
+    const classes = await Promise.all(
+      data.classeIds.map(id => this.classeRepository.findById(id))
+    );
 
-    if (classes.length !== data.classeIds.length) {
-      throw new Error("One or more classes not found")
-    }
-
-    if (data.heureFin <= data.heureDebut) {
-      throw new Error("Invalid time range")
+    const validClasses = classes.filter(c => c !== null);
+    if (validClasses.length !== data.classeIds.length) {
+      throw new Error("One or more classes not found");
     }
 
     return await this.coursRepository.create({
@@ -37,12 +34,13 @@ export class CoursService {
       heureFin: data.heureFin,
       semestre: data.semestre,
       module: data.module,
-      professeur,
-      classes
-    })
+      professeur: professeur, // C'est maintenant un type 'Professeur', TS est content
+      classes: validClasses as any
+    });
   }
+  // Dans src/service/CoursService.ts
+async findAll() {
+  return await this.coursRepository.findAll();
+}
 
-  async findAll() {
-    return await this.coursRepository.findAll()
-  }
 }

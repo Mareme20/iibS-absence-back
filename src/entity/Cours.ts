@@ -8,7 +8,7 @@ import {
 } from "typeorm"
 import { User } from "./User"
 import { Classe } from "./Classe"
-
+import { Professeur } from "./Professeur";
 @Entity()
 export class Cours {
 
@@ -30,8 +30,8 @@ export class Cours {
   @Column()
   module!: string
 
-  @ManyToOne(() => User)
-  professeur!: User
+  @ManyToOne(() => Professeur)
+ professeur!: Professeur
 
   @ManyToMany(() => Classe)
   @JoinTable()
