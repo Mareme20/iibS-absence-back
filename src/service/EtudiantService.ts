@@ -35,6 +35,10 @@ export class EtudiantService {
     });
   }
 
+  async findAll() {
+    return await this.etudiantRepo.findAll();
+  }
+
   async inscrire(etudiantId: number, classeId: number, annee: string) {
     const etudiant = await this.etudiantRepo.findById(etudiantId);
     const classe = await this.classeRepo.findById(classeId);

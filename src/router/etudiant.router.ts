@@ -104,4 +104,22 @@ router.get("/mes-absences", authMiddleware, (req, res) => etudiantController.get
  */
 router.get("/mes-justifications", authMiddleware, (req, res) => etudiantController.getMesJustifications(req, res));
 
+/**
+ * @swagger
+ * /api/etudiants:
+ *   get:
+ *     summary: Liste de tous les étudiants
+ *     tags: [Étudiants]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des étudiants
+ */
+router.get(
+  "/",
+  authMiddleware,
+  (req, res) => etudiantController.findAll(req, res)
+);
+
 export default router

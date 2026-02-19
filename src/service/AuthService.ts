@@ -26,26 +26,30 @@ export class AuthService {
     return user
   }
 
-  async login(data: LoginDto) {
+  // src/service/AuthService.ts (Backend)
+async login(data: LoginDto) {
+  const user = await this.userRepository.findByEmail(data.email)
 
-    const user = await this.userRepository.findByEmail(data.email)
-
-    if (!user) {
-      throw new Error("Invalid credentials")
-    }
-
-    const isValid = await bcrypt.compare(data.password, user.password)
-
-    if (!isValid) {
-      throw new Error("Invalid credentials")
-    }
-
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1d" }
-    )
-
-    return { token }
+  if (!user || !(await bcrypt.compare(data.password, user.password))) {
+    throw new Error("Invalid credentials")
   }
+
+  const token = jwt.sign(
+    { id: user.id, role: user.role, prenom: user.prenom },
+    process.env.JWT_SECRET as string,
+    { expiresIn: "1d" }
+  )
+
+  // ON RENVOIE AUSSI L'OBJET USER POUR ANGULAR
+  return { 
+    token, 
+    user: { 
+      id: user.id, 
+      nom: user.nom, 
+      prenom: user.prenom, 
+      role: user.role 
+    } 
+  }
+}
+
 }

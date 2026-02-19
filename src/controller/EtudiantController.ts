@@ -47,6 +47,15 @@ export class EtudiantController {
     }
   }
 
+  async findAll(req: Request, res: Response) {
+    try {
+      const result = await service.findAll();
+      return successResponse(res, result);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
   async inscrire(req: Request, res: Response) {
     try {
       const data = inscriptionSchema.parse(req.body)
