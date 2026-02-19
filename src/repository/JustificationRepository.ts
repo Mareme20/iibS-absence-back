@@ -23,4 +23,11 @@ export class JustificationRepository implements IJustificationRepository {
       relations: ["absence"] 
     });
   }
+  async findByEtudiant(etudiantId: number): Promise<Justification[]> {
+  return await this.repo.find({
+    where: { absence: { etudiant: { id: etudiantId } } },
+    relations: ["absence", "absence.cours"]
+  });
+}
+
 }

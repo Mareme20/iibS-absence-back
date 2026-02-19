@@ -4,13 +4,15 @@ import { IEtudiantRepository } from "../repository/interfaces/IEtudiantRepositor
 import { IUserRepository } from "../repository/interfaces/IUserRepository";
 import { IClasseRepository } from "../repository/interfaces/IClasseRepository";
 import { IInscriptionRepository } from "../repository/interfaces/IInscriptionRepository";
+import { IAbsenceRepository } from "../repository/interfaces/IAbsenceRepository"; // <--- Import du repo Absence
 
 export class EtudiantService {
   constructor(
     private etudiantRepo: IEtudiantRepository,
     private userRepo: IUserRepository,
     private classeRepo: IClasseRepository,
-    private inscriptionRepo: IInscriptionRepository
+    private inscriptionRepo: IInscriptionRepository,
+    private absenceRepo: IAbsenceRepository // <--- Injecte le repo Absence ici
   ) {}
 
   async create(data: any) {
@@ -47,4 +49,14 @@ export class EtudiantService {
       annee
     });
   }
+  // Dans EtudiantService.ts
+ async getMesAbsences(userId: number, date?: string) {
+    // 1. On trouve l'étudiant via le UserID du token
+    const etudiant = await this.etudiantRepo.findByUserId(userId);
+    if (!etudiant) throw new Error("Profil étudiant non trouvé");
+
+    // 2. On appelle le repo Absence pour récupérer les données (Règle l'erreur TS)
+    return await this.absenceRepo.findByEtudiant(etudiant.id, date);
+  }
+
 }

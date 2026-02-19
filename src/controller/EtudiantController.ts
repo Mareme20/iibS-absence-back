@@ -4,24 +4,39 @@ import { EtudiantRepository } from "../repository/EtudiantRepository"
 import { UserRepository } from "../repository/UserRepository"
 import { ClasseRepository } from "../repository/ClasseRepository"
 import { InscriptionRepository } from "../repository/InscriptionRepository"
+import { AbsenceRepository } from "../repository/AbsenceRepository" // Ajouté
+import { JustificationRepository } from "../repository/JustificationRepository" // Ajouté
+import { JustificationService } from "../service/JustificationService"
 import { createEtudiantSchema, inscriptionSchema } from "../dto/etudiant.dto"
 import { successResponse, errorResponse } from "../utils/response"
 
+// 1. Initialisation des Repositories
 const etudiantRepo = new EtudiantRepository()
 const userRepo = new UserRepository()
 const classeRepo = new ClasseRepository()
 const inscriptionRepo = new InscriptionRepository()
+const absenceRepo = new AbsenceRepository()
+const justificationRepo = new JustificationRepository()
 
+// 2. Initialisation des Services
+// On ajoute absenceRepo à EtudiantService (il en a besoin pour getMesAbsences)
 const service = new EtudiantService(
   etudiantRepo, 
   userRepo, 
   classeRepo, 
-  inscriptionRepo
+  inscriptionRepo,
+  absenceRepo 
+)
+
+// Instance du service de justification
+const justificationService = new JustificationService(
+  justificationRepo, 
+  absenceRepo, 
+  etudiantRepo
 )
 
 export class EtudiantController {
 
-  // RETIRER 'static' ICI
   async create(req: Request, res: Response) {
     try {
       const data = createEtudiantSchema.parse(req.body)
@@ -32,7 +47,6 @@ export class EtudiantController {
     }
   }
 
-  // RETIRER 'static' ICI
   async inscrire(req: Request, res: Response) {
     try {
       const data = inscriptionSchema.parse(req.body)
@@ -44,6 +58,28 @@ export class EtudiantController {
       return successResponse(res, result, "Inscription created", 201)
     } catch (error: any) {
       return errorResponse(res, error.message)
+    }
+  }
+
+  async getMesAbsences(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const date = req.query.date as string;
+      const result = await service.getMesAbsences(userId, date);
+      return successResponse(res, result);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
+  async getMesJustifications(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      // CORRECTION : On utilise l'instance 'justificationService' et non la classe
+      const result = await justificationService.getMesJustifications(userId);
+      return successResponse(res, result);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
     }
   }
 }

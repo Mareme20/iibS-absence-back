@@ -26,6 +26,13 @@ export class EtudiantRepository implements IEtudiantRepository {
       relations: ["user"] 
     });
   }
+  async findByUserId(userId: number): Promise<Etudiant | null> {
+  // On cherche l'étudiant dont la propriété 'user' a l'ID correspondant
+  return await this.repo.findOne({ 
+    where: { user: { id: userId } } 
+  });
+}
+
 
   async findByMatricule(matricule: string): Promise<Etudiant | null> {
     return await this.repo.findOne({ 

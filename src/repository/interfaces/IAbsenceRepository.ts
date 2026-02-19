@@ -5,4 +5,7 @@ export interface IAbsenceRepository {
 
   findById(id: number): Promise<Absence | null>;
   save(absence: Absence): Promise<Absence>;
+  // Ajoute ces signatures
+findByEtudiant(etudiantId: number, date?: string): Promise<Absence[]>;
+
 }

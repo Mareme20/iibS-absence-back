@@ -28,4 +28,12 @@ export class AbsenceService {
       cours
     });
   }
+  async getMesAbsences(userId: number, date?: string) {
+  // On récupère d'abord l'ID de l'étudiant à partir du userId du token
+  const etudiant = await this.etudiantRepo.findById(userId); 
+  if (!etudiant) throw new Error("Profil étudiant non trouvé");
+
+  return await this.absenceRepo.findByEtudiant(etudiant.id, date);
+}
+
 }

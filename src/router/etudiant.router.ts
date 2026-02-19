@@ -79,5 +79,29 @@ router.post(
   authorizeRoles(UserRole.ATTACHE),
   (req, res) => etudiantController.inscrire(req, res)
 )
+/**
+ * @swagger
+ * /api/etudiants/mes-absences:
+ *   get:
+ *     summary: Liste des absences de l'étudiant connecté
+ *     tags: [Étudiants]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: query
+ *         name: date
+ *         schema: { type: string, format: date }
+ *         description: Filtrer par date (optionnel)
+ */
+router.get("/mes-absences", authMiddleware, (req, res) => etudiantController.getMesAbsences(req, res));
+
+/**
+ * @swagger
+ * /api/etudiants/mes-justifications:
+ *   get:
+ *     summary: Liste des justifications de l'étudiant connecté
+ *     tags: [Étudiants]
+ *     security: [{ bearerAuth: [] }]
+ */
+router.get("/mes-justifications", authMiddleware, (req, res) => etudiantController.getMesJustifications(req, res));
 
 export default router

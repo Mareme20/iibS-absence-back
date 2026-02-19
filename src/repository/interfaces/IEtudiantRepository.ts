@@ -5,4 +5,5 @@ export interface IEtudiantRepository {
   findAll(): Promise<Etudiant[]>;
   findById(id: number): Promise<Etudiant | null>;
   findByMatricule(matricule: string): Promise<Etudiant | null>;
-}
+    findByUserId(userId: number): Promise<Etudiant | null>;
+ }

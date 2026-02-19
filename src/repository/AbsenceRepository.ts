@@ -20,4 +20,16 @@ export class AbsenceRepository implements IAbsenceRepository {
   async save(absence: Absence): Promise<Absence> {
     return await this.repo.save(absence);
   }
+  async findByEtudiant(etudiantId: number, date?: string): Promise<Absence[]> {
+  const query = this.repo.createQueryBuilder("absence")
+    .leftJoinAndSelect("absence.cours", "cours")
+    .where("absence.etudiantId = :etudiantId", { etudiantId });
+
+  if (date) {
+    query.andWhere("absence.date = :date", { date });
+  }
+
+  return await query.getMany();
+}
+
 }

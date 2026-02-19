@@ -1,11 +1,13 @@
 import { IJustificationRepository } from "../repository/interfaces/IJustificationRepository";
 import { IAbsenceRepository } from "../repository/interfaces/IAbsenceRepository";
+import { IEtudiantRepository } from "../repository/interfaces/IEtudiantRepository"; // Ajouté
 import { StatutJustification } from "../entity/Justification";
 
 export class JustificationService {
   constructor(
     private justificationRepo: IJustificationRepository,
-    private absenceRepo: IAbsenceRepository
+    private absenceRepo: IAbsenceRepository,
+    private etudiantRepo: IEtudiantRepository // Injecté ici
   ) {}
 
   async create(data: any) {
@@ -31,7 +33,6 @@ export class JustificationService {
 
     justification.statut = statut;
 
-    // Logique métier : Si acceptée, on met à jour l'absence liée
     if (statut === StatutJustification.ACCEPTEE && justification.absence) {
       justification.absence.estJustifiee = true;
       await this.absenceRepo.save(justification.absence);
@@ -39,4 +40,18 @@ export class JustificationService {
 
     return await this.justificationRepo.save(justification);
   }
+  
+
+  async getMesJustifications(userId: number) {
+    // On cherche l'étudiant qui possède cet ID utilisateur (issu du JWT)
+    const etudiant = await this.etudiantRepo.findByUserId(userId);
+    
+    if (!etudiant) {
+      throw new Error("Profil étudiant non trouvé");
+    }
+
+    // On récupère les justifications liées à l'ID technique de l'étudiant
+    return await this.justificationRepo.findByEtudiant(etudiant.id);
+  }
+
 }
