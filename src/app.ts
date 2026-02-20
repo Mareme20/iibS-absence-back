@@ -25,7 +25,7 @@ app.use(
 );
 
 // Important pour gérer les requêtes preflight
-app.options("*", cors());
+app.use(cors());
 
 /**
  * =============================
