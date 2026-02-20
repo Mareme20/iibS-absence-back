@@ -27,20 +27,26 @@ export class AuthService {
   }
 
   // src/service/AuthService.ts (Backend)
+// Côté Backend (Node.js)
 async login(data: LoginDto) {
-  const user = await this.userRepository.findByEmail(data.email)
+  const user = await this.userRepository.findByEmail(data.email);
 
   if (!user || !(await bcrypt.compare(data.password, user.password))) {
-    throw new Error("Invalid credentials")
+    throw new Error("Invalid credentials");
   }
 
+  // On injecte bien le prenom et le role dans le payload du JWT
   const token = jwt.sign(
-    { id: user.id, role: user.role, prenom: user.prenom },
+    { 
+      id: user.id, 
+      role: user.role, 
+      prenom: user.prenom,
+      email: user.email 
+    },
     process.env.JWT_SECRET as string,
     { expiresIn: "1d" }
-  )
+  );
 
-  // ON RENVOIE AUSSI L'OBJET USER POUR ANGULAR
   return { 
     token, 
     user: { 
@@ -49,7 +55,8 @@ async login(data: LoginDto) {
       prenom: user.prenom, 
       role: user.role 
     } 
-  }
+  };
 }
+
 
 }
