@@ -49,10 +49,32 @@ async findById(id: number) {
 
 async update(id: number, data: any) {
   const cours = await this.coursRepository.findById(id);
-  if (!cours) {
-    throw new Error("Cours non trouvé");
+  if (!cours) throw new Error("Cours non trouvé");
+
+  if (data.professeurId) {
+    const professeur = await this.professeurRepository.findById(data.professeurId);
+    if (!professeur) throw new Error("Professeur non trouvé");
+    cours.professeur = professeur;
   }
-  return await this.coursRepository.update(id, data);
+
+  if (data.classeIds && Array.isArray(data.classeIds)) {
+    const classes = await Promise.all(
+      data.classeIds.map((id: number) => this.classeRepository.findById(id))
+    );
+    const validClasses = classes.filter(c => c !== null);
+    if (validClasses.length !== data.classeIds.length) {
+      throw new Error("Une ou plusieurs classes non trouvées");
+    }
+    cours.classes = validClasses as any;
+  }
+
+  cours.date = data.date ?? cours.date;
+  cours.heureDebut = data.heureDebut ?? cours.heureDebut;
+  cours.heureFin = data.heureFin ?? cours.heureFin;
+  cours.semestre = data.semestre ?? cours.semestre;
+  cours.module = data.module ?? cours.module;
+
+   return await this.coursRepository.save(cours);
 }
 
 async delete(id: number) {

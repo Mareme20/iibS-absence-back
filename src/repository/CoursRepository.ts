@@ -12,6 +12,9 @@ export class CoursRepository implements ICoursRepository {
   constructor() {
     this.repo = AppDataSource.getRepository(Cours)
   }
+  async save(cours: Cours): Promise<Cours> {
+  return await this.repo.save(cours);
+}
 
   async create(data: Partial<Cours>): Promise<Cours> {
     const cours = this.repo.create(data)

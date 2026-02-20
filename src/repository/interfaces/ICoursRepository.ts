@@ -6,4 +6,5 @@ export interface ICoursRepository {
   findById(id: number): Promise<Cours | null>;
   update(id: number, data: Partial<Cours>): Promise<Cours>;
   delete(id: number): Promise<void>;
+  save(cours: Cours): Promise<Cours>;
 }
