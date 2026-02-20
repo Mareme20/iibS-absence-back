@@ -151,7 +151,7 @@ router.delete(
  *             properties:
  *               statut:
  *                 type: string
- *                 enum: [ACCEPTEE, REJETEE, EN_ATTENTE]
+                 enum: [ACCEPTEE, REFUSEE, EN_ATTENTE]
  *     responses:
  *       200:
  *         description: Justification traitée
@@ -159,7 +159,7 @@ router.delete(
 router.put(
   "/:id/traiter",
   authMiddleware,
-  authorizeRoles(UserRole.PROF),
+  authorizeRoles(UserRole.PROF, UserRole.ATTACHE),
   (req, res) => justificationController.traiter(req, res)
 );
 

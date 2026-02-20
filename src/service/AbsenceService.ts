@@ -60,4 +60,13 @@ export class AbsenceService {
     return await this.absenceRepo.delete(id);
   }
 
+  async markAsJustified(id: number): Promise<Absence> {
+    const absence = await this.absenceRepo.findById(id);
+    if (!absence) {
+      throw new Error("Absence non trouvée");
+    }
+    absence.estJustifiee = true;
+    return await this.absenceRepo.save(absence);
+  }
+
 }

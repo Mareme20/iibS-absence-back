@@ -71,4 +71,14 @@ export class AbsenceController {
       return errorResponse(res, error.message);
     }
   }
+
+  markAsJustified = async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const result = await service.markAsJustified(id);
+      return successResponse(res, result, "Absence marquée comme justifiée", 200);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
 }

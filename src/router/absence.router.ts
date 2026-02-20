@@ -167,4 +167,29 @@ router.delete(
   (req, res) => absenceController.delete(req, res)
 )
 
+/**
+ * @swagger
+ * /api/absences/{id}/justifier:
+ *   put:
+ *     summary: Marquer une absence comme justifiée (Accessible par ATTACHE et PROF)
+ *     tags: [Absences]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Absence marquée comme justifiée
+ */
+router.put(
+  "/:id/justifier",
+  authMiddleware,
+  authorizeRoles(UserRole.PROF, UserRole.ATTACHE),
+  (req, res) => absenceController.markAsJustified(req, res)
+)
+
 export default router
