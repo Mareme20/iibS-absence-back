@@ -106,6 +106,30 @@ router.get("/mes-justifications", authMiddleware, (req, res) => etudiantControll
 
 /**
  * @swagger
+ * /api/etudiants/justifier:
+ *   post:
+ *     summary: Soumettre une justification d'absence
+ *     tags: [Étudiants]
+ *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [absenceId, date, motif]
+ *             properties:
+ *               absenceId: { type: number, example: 1 }
+ *               date: { type: string, format: date, example: "2024-02-20" }
+ *               motif: { type: string, example: "Maladie" }
+ *     responses:
+ *       201:
+ *         description: Justification soumise avec succès
+ */
+router.post("/justifier", authMiddleware, (req, res) => etudiantController.justifier(req, res));
+
+/**
+ * @swagger
  * /api/etudiants:
  *   get:
  *     summary: Liste de tous les étudiants

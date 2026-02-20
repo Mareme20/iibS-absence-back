@@ -91,4 +91,26 @@ export class EtudiantController {
       return errorResponse(res, error.message);
     }
   }
+
+  async justifier(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const { absenceId, date, motif } = req.body;
+      
+      if (!absenceId || !date || !motif) {
+        return errorResponse(res, "Les champs absenceId, date et motif sont requis");
+      }
+
+      const result = await justificationService.create({
+        absenceId,
+        date,
+        motif,
+        etudiantId: userId
+      });
+      
+      return successResponse(res, result, "Justification soumise avec succès", 201);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
 }
