@@ -47,15 +47,19 @@ async login(data: LoginDto) {
     { expiresIn: "1d" }
   );
 
-  return { 
-    token, 
-    user: { 
-      id: user.id, 
-      nom: user.nom, 
-      prenom: user.prenom, 
-      role: user.role 
-    } 
-  };
+  return {
+  success: true,
+  data: {
+    token,
+    user: {
+      id: user.id,
+      nom: user.nom,
+      prenom: user.prenom,
+      role: user.role
+    }
+  }
+};
+
 }
 
 
