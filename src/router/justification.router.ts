@@ -151,7 +151,7 @@ router.delete(
  *             properties:
  *               statut:
  *                 type: string
-                 enum: [ACCEPTEE, REFUSEE, EN_ATTENTE]
+ *                 enum: [ACCEPTEE, REFUSEE, EN_ATTENTE]
  *     responses:
  *       200:
  *         description: Justification traitée
