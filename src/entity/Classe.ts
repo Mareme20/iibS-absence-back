@@ -16,6 +16,6 @@ export class Classe {
   @Column()
   niveau!: string
 
-  @ManyToMany(() => Cours, (cours) => cours.classes)
-  cours!: Cours[]
+ @ManyToMany(() => Cours, (cours) => cours.classes)
+cours!: Cours[]
 }

@@ -33,7 +33,7 @@ export class Cours {
   @ManyToOne(() => Professeur)
  professeur!: Professeur
 
-  @ManyToMany(() => Classe)
-  @JoinTable()
-  classes!: Classe[]
+@ManyToMany(() => Classe, (classe) => classe.cours)
+@JoinTable()
+classes!: Classe[]
 }

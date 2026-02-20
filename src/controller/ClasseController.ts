@@ -3,29 +3,42 @@ import { ClasseRepository } from "../repository/ClasseRepository"
 import { ClasseService } from "../service/ClasseService"
 import { createClasseSchema } from "../dto/classe.dto"
 import { successResponse, errorResponse } from "../utils/response"
+import { AuthRequest } from "../middleware/auth.middleware"
 
 const repository = new ClasseRepository()
 const service = new ClasseService(repository)
 
 export class ClasseController {
 
-  // RETIRER 'static' ICI
-  async create(req: Request, res: Response) {
+  async create(req: AuthRequest, res: Response) {
     try {
+      console.log("=== CREATE CLASSE REQUEST ===")
+      console.log("Body:", req.body)
+      console.log("User:", req.user)
+      
       const data = createClasseSchema.parse(req.body)
+      console.log("Parsed data:", data)
+      
       const result = await service.create(data)
-      return successResponse(res, result, "Classe created", 201)
+      console.log("Created result:", result)
+      
+      return successResponse(res, result, "Classe créée avec succès", 201)
     } catch (error: any) {
-      return errorResponse(res, error.message)
+      console.error("=== CREATE CLASSE ERROR ===")
+      console.error("Error:", error)
+      return errorResponse(res, error.message || "Erreur lors de la création")
     }
   }
 
-  // RETIRER 'static' ICI
-  async findAll(req: Request, res: Response) {
+  async findAll(req: AuthRequest, res: Response) {
     try {
+      console.log("=== FIND ALL CLASSES ===")
       const result = await service.findAll()
+      console.log("Classes found:", result)
       return successResponse(res, result)
     } catch (error: any) {
+      console.error("=== FIND ALL CLASSES ERROR ===")
+      console.error("Error:", error)
       return errorResponse(res, error.message)
     }
   }

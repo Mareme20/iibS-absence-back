@@ -16,13 +16,12 @@ export const AppDataSource = new DataSource({
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT) || 5432,
   username: String(process.env.DB_USER || "postgres"),
-  password: String(process.env.DB_PASSWORD || "postgres"), // Le String() est crucial ici
+  password: String(process.env.DB_PASSWORD || "postgres"),
   database: String(process.env.DB_NAME || "iibs_absence"),
   synchronize: true,
-    dropSchema: true, // <--- AJOUTE CETTE LIGNE TEMPORAIREMENT
   logging: false,
   entities: [User, Classe, Cours, Etudiant, Inscription, Absence,Professeur, Justification],
-   migrations: [],
+  migrations: [],
   subscribers: [],
-    ssl: { rejectUnauthorized: false }, // Nécessaire pour Neon/Render
+  ssl: { rejectUnauthorized: false },
 })
