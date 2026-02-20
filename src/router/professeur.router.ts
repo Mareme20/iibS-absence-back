@@ -50,4 +50,22 @@ router.post(
   (req, res) => professeurController.create(req, res)
 )
 
+/**
+ * @swagger
+ * /api/professeurs:
+ *   get:
+ *     summary: Liste de tous les professeurs
+ *     tags: [Professeurs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des professeurs
+ */
+router.get(
+  "/",
+  authMiddleware,
+  (req, res) => professeurController.findAll(req, res)
+)
+
 export default router

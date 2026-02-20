@@ -24,8 +24,8 @@ export class ProfesseurController {
     }
   }
 
-  // N'oublie pas d'ajouter le findAll si tu l'as dans ton service
-  static async findAll(req: Request, res: Response) {
+  // Méthode pour lister tous les professeurs
+  async findAll(req: Request, res: Response) {
     try {
       const result = await service.findAll()
       return successResponse(res, result)
