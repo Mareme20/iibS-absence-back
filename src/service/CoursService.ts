@@ -38,6 +38,27 @@ export class CoursService {
       classes: validClasses as any
     });
   }
+
+  async getMesCours(userId: number, dateDebut?: string, dateFin?: string) {
+    // Trouver le professeur par son userId
+    const professeur = await this.professeurRepository.findByUserId(userId);
+    
+    if (!professeur) {
+      throw new Error("Professeur non trouvé");
+    }
+
+    // Si des dates sont fournies, filtrer par période
+    if (dateDebut && dateFin) {
+      return await this.coursRepository.findByProfesseurAndDateRange(
+        professeur.id,
+        new Date(dateDebut),
+        new Date(dateFin)
+      );
+    }
+
+    // Sinon, retourner tous les cours du professeur
+    return await this.coursRepository.findByProfesseur(professeur.id);
+  }
 // Dans src/service/CoursService.ts
 async findAll() {
   return await this.coursRepository.findAll();

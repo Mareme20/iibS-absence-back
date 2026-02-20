@@ -34,6 +34,25 @@ export class CoursRepository implements ICoursRepository {
     });
   }
 
+  async findByProfesseur(professeurId: number): Promise<Cours[]> {
+    return await this.repo.find({
+      where: { professeur: { id: professeurId } },
+      relations: ["professeur", "classes"]
+    });
+  }
+
+  async findByProfesseurAndDateRange(professeurId: number, dateDebut: Date, dateFin: Date): Promise<Cours[]> {
+    return await this.repo
+      .createQueryBuilder("cours")
+      .innerJoin("cours.professeur", "professeur")
+      .leftJoinAndSelect("cours.classes", "classes")
+      .where("professeur.id = :professeurId", { professeurId })
+      .andWhere("cours.date >= :dateDebut", { dateDebut })
+      .andWhere("cours.date <= :dateFin", { dateFin })
+      .orderBy("cours.date", "ASC")
+      .getMany();
+  }
+
   async update(id: number, data: Partial<Cours>): Promise<Cours> {
     await this.repo.update(id, data);
     return await this.findById(id) as Cours;

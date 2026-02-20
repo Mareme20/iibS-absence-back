@@ -53,6 +53,25 @@ router.post(
 
 /**
  * @swagger
+ * /api/cours/mes-cours:
+ *   get:
+ *     summary: Liste des cours du professeur connecté
+ *     tags: [Cours]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des cours du professeur récupérée
+ */
+router.get(
+  "/mes-cours",
+  authMiddleware,
+  authorizeRoles(UserRole.PROF),
+  (req, res) => coursController.getMesCours(req, res)
+)
+
+/**
+ * @swagger
  * /api/cours:
  *   get:
  *     summary: Liste de tous les cours

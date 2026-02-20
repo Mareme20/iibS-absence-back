@@ -29,6 +29,13 @@ export class ProfesseurRepository implements IProfesseurRepository {
     })
   }
 
+  async findByUserId(userId: number): Promise<Professeur | null> {
+    return await this.repo.findOne({
+      where: { user: { id: userId } },
+      relations: ["user"]
+    })
+  }
+
   async update(id: number, data: Partial<Professeur>): Promise<Professeur> {
     await this.repo.update(id, data);
     return await this.findById(id) as Professeur;
@@ -38,3 +45,4 @@ export class ProfesseurRepository implements IProfesseurRepository {
     await this.repo.delete(id);
   }
 }
+

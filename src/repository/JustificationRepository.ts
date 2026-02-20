@@ -43,4 +43,32 @@ export class JustificationRepository implements IJustificationRepository {
       relations: ["absence", "absence.cours"]
     });
   }
+
+  async findByEtudiantAndFilters(
+    etudiantId: number, 
+    dateDebut?: Date, 
+    dateFin?: Date, 
+    statut?: string
+  ): Promise<Justification[]> {
+    const queryBuilder = this.repo
+      .createQueryBuilder("justification")
+      .innerJoin("justification.absence", "absence")
+      .innerJoin("absence.etudiant", "etudiant")
+      .leftJoinAndSelect("justification.absence.cours", "cours")
+      .where("etudiant.id = :etudiantId", { etudiantId });
+
+    if (dateDebut) {
+      queryBuilder.andWhere("justification.date >= :dateDebut", { dateDebut });
+    }
+
+    if (dateFin) {
+      queryBuilder.andWhere("justification.date <= :dateFin", { dateFin });
+    }
+
+    if (statut) {
+      queryBuilder.andWhere("justification.statut = :statut", { statut });
+    }
+
+    return await queryBuilder.orderBy("justification.date", "DESC").getMany();
+  }
 }

@@ -8,4 +8,10 @@ export interface IJustificationRepository {
   update(id: number, data: Partial<Justification>): Promise<Justification>;
   delete(id: number): Promise<void>;
   findByEtudiant(etudiantId: number): Promise<Justification[]>;
+  findByEtudiantAndFilters(
+    etudiantId: number, 
+    dateDebut?: Date, 
+    dateFin?: Date, 
+    statut?: string
+  ): Promise<Justification[]>;
 }

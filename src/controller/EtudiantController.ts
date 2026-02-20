@@ -84,7 +84,8 @@ export class EtudiantController {
   async getMesJustifications(req: Request, res: Response) {
     try {
       const userId = (req as any).user.id;
-      const result = await justificationService.getMesJustifications(userId);
+      const { statut } = req.query;
+      const result = await justificationService.getMesJustifications(userId, statut as string);
       return successResponse(res, result);
     } catch (error: any) {
       return errorResponse(res, error.message);

@@ -42,7 +42,7 @@ export class JustificationService {
   }
   
 
-  async getMesJustifications(userId: number) {
+  async getMesJustifications(userId: number, statut?: string) {
     // On cherche l'étudiant qui possède cet ID utilisateur (issu du JWT)
     const etudiant = await this.etudiantRepo.findByUserId(userId);
     
@@ -50,7 +50,17 @@ export class JustificationService {
       throw new Error("Profil étudiant non trouvé");
     }
 
-    // On récupère les justifications liées à l'ID technique de l'étudiant
+    // Si un statut est fourni, utiliser la méthode filtrée
+    if (statut) {
+      return await this.justificationRepo.findByEtudiantAndFilters(
+        etudiant.id,
+        undefined,
+        undefined,
+        statut
+      );
+    }
+
+    // Sinon, retourner toutes les justifications
     return await this.justificationRepo.findByEtudiant(etudiant.id);
   }
 

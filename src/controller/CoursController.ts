@@ -24,6 +24,18 @@ export class CoursController {
     }
   }
 
+  getMesCours = async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user.id;
+      const { dateDebut, dateFin } = req.query;
+      
+      const result = await service.getMesCours(userId, dateDebut as string, dateFin as string);
+      return successResponse(res, result);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
   async findAll(req: Request, res: Response) {
     try {
       const result = await service.findAll()
