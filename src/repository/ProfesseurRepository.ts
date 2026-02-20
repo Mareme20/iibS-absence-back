@@ -28,4 +28,13 @@ export class ProfesseurRepository implements IProfesseurRepository {
       relations: ["user"]
     })
   }
+
+  async update(id: number, data: Partial<Professeur>): Promise<Professeur> {
+    await this.repo.update(id, data);
+    return await this.findById(id) as Professeur;
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.repo.delete(id);
+  }
 }

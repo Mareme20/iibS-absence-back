@@ -29,4 +29,25 @@ export class ClasseController {
       return errorResponse(res, error.message)
     }
   }
+
+  async update(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id as string)
+      const data = req.body
+      const result = await service.update(id, data)
+      return successResponse(res, result, "Classe mise à jour", 200)
+    } catch (error: any) {
+      return errorResponse(res, error.message)
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id as string)
+      await service.delete(id)
+      return successResponse(res, null, "Classe supprimée", 200)
+    } catch (error: any) {
+      return errorResponse(res, error.message)
+    }
+  }
 }

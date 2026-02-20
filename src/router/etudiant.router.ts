@@ -146,4 +146,63 @@ router.get(
   (req, res) => etudiantController.findAll(req, res)
 );
 
+/**
+ * @swagger
+ * /api/etudiants/{id}:
+ *   put:
+ *     summary: Mettre à jour un étudiant
+ *     tags: [Étudiants]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               matricule: { type: string }
+ *               adresse: { type: string }
+ *     responses:
+ *       200:
+ *         description: Étudiant mis à jour
+ */
+router.put(
+  "/:id",
+  authMiddleware,
+  authorizeRoles(UserRole.ATTACHE),
+  (req, res) => etudiantController.update(req, res)
+);
+
+/**
+ * @swagger
+ * /api/etudiants/{id}:
+ *   delete:
+ *     summary: Supprimer un étudiant
+ *     tags: [Étudiants]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Étudiant supprimé
+ */
+router.delete(
+  "/:id",
+  authMiddleware,
+  authorizeRoles(UserRole.ATTACHE),
+  (req, res) => etudiantController.delete(req, res)
+);
+
 export default router

@@ -84,9 +84,29 @@ export class EtudiantController {
   async getMesJustifications(req: Request, res: Response) {
     try {
       const userId = (req as any).user.id;
-      // CORRECTION : On utilise l'instance 'justificationService' et non la classe
       const result = await justificationService.getMesJustifications(userId);
       return successResponse(res, result);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
+  async update(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id as string);
+      const data = req.body;
+      const result = await service.update(id, data);
+      return successResponse(res, result, "Étudiant mis à jour", 200);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id as string);
+      await service.delete(id);
+      return successResponse(res, null, "Étudiant supprimé", 200);
     } catch (error: any) {
       return errorResponse(res, error.message);
     }

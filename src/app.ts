@@ -7,7 +7,10 @@ import etudiantRouter from "./router/etudiant.router";
 import statsRouter from "./router/stats.router";
 import swaggerUi from "swagger-ui-express";
 import { specs } from "./config/swagger";
-import proffesseurRouter from "./router/professeur.router" // N'oublie pas d'importer professeurRouter en haut
+import proffesseurRouter from "./router/professeur.router";
+import absenceRouter from "./router/absence.router";
+import justificationRouter from "./router/justification.router";
+
 export const app = express();
 
 /**
@@ -59,7 +62,9 @@ app.use("/api/classes", classeRouter);
 app.use("/api/cours", coursRouter);
 app.use("/api/etudiants", etudiantRouter);
 app.use("/api/stats", statsRouter);
-app.use("/api/professeurs", proffesseurRouter); // N'oublie pas d'importer professeurRouter en haut
+app.use("/api/professeurs", proffesseurRouter);
+app.use("/api/absences", absenceRouter);
+app.use("/api/justifications", justificationRouter);
 
 /**
  * =============================

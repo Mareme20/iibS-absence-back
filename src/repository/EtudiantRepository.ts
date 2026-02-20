@@ -23,21 +23,30 @@ export class EtudiantRepository implements IEtudiantRepository {
   async findById(id: number): Promise<Etudiant | null> {
     return await this.repo.findOne({ 
       where: { id }, 
-      relations: ["user"] 
+      relations: ["user", "inscriptions", "inscriptions.classe"] 
     });
   }
-  async findByUserId(userId: number): Promise<Etudiant | null> {
-  // On cherche l'étudiant dont la propriété 'user' a l'ID correspondant
-  return await this.repo.findOne({ 
-    where: { user: { id: userId } } 
-  });
-}
 
+  async findByUserId(userId: number): Promise<Etudiant | null> {
+    // On cherche l'étudiant dont la propriété 'user' a l'ID correspondant
+    return await this.repo.findOne({ 
+      where: { user: { id: userId } } 
+    });
+  }
 
   async findByMatricule(matricule: string): Promise<Etudiant | null> {
     return await this.repo.findOne({ 
       where: { matricule }, 
       relations: ["user"] 
     });
+  }
+
+  async update(id: number, data: Partial<Etudiant>): Promise<Etudiant> {
+    await this.repo.update(id, data);
+    return await this.findById(id) as Etudiant;
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.repo.delete(id);
   }
 }

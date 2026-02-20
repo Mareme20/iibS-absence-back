@@ -54,4 +54,28 @@ export class JustificationService {
     return await this.justificationRepo.findByEtudiant(etudiant.id);
   }
 
+  async findAll() {
+    return await this.justificationRepo.findAll();
+  }
+
+  async findById(id: number) {
+    return await this.justificationRepo.findById(id);
+  }
+
+  async update(id: number, data: any) {
+    const justification = await this.justificationRepo.findById(id);
+    if (!justification) {
+      throw new Error("Justification non trouvée");
+    }
+    return await this.justificationRepo.update(id, data);
+  }
+
+  async delete(id: number) {
+    const justification = await this.justificationRepo.findById(id);
+    if (!justification) {
+      throw new Error("Justification non trouvée");
+    }
+    return await this.justificationRepo.delete(id);
+  }
+
 }

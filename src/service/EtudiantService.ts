@@ -39,6 +39,26 @@ export class EtudiantService {
     return await this.etudiantRepo.findAll();
   }
 
+  async findById(id: number) {
+    return await this.etudiantRepo.findById(id);
+  }
+
+  async update(id: number, data: any) {
+    const etudiant = await this.etudiantRepo.findById(id);
+    if (!etudiant) {
+      throw new Error("Étudiant non trouvé");
+    }
+    return await this.etudiantRepo.update(id, data);
+  }
+
+  async delete(id: number) {
+    const etudiant = await this.etudiantRepo.findById(id);
+    if (!etudiant) {
+      throw new Error("Étudiant non trouvé");
+    }
+    return await this.etudiantRepo.delete(id);
+  }
+
   async inscrire(etudiantId: number, classeId: number, annee: string) {
     const etudiant = await this.etudiantRepo.findById(etudiantId);
     const classe = await this.classeRepo.findById(classeId);

@@ -65,4 +65,106 @@ router.post(
   (req, res) => absenceController.create(req, res)
 )
 
+/**
+ * @swagger
+ * /api/absences:
+ *   get:
+ *     summary: Liste de toutes les absences
+ *     tags: [Absences]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des absences récupérée
+ */
+router.get(
+  "/",
+  authMiddleware,
+  (req, res) => absenceController.findAll(req, res)
+)
+
+/**
+ * @swagger
+ * /api/absences/{id}:
+ *   get:
+ *     summary: Récupérer une absence par ID
+ *     tags: [Absences]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Absence récupérée
+ */
+router.get(
+  "/:id",
+  authMiddleware,
+  (req, res) => absenceController.findById(req, res)
+)
+
+/**
+ * @swagger
+ * /api/absences/{id}:
+ *   put:
+ *     summary: Mettre à jour une absence
+ *     tags: [Absences]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               date: { type: string, format: date }
+ *               nombreHeures: { type: number }
+ *               justifiee: { type: boolean }
+ *     responses:
+ *       200:
+ *         description: Absence mise à jour
+ */
+router.put(
+  "/:id",
+  authMiddleware,
+  authorizeRoles(UserRole.PROF),
+  (req, res) => absenceController.update(req, res)
+)
+
+/**
+ * @swagger
+ * /api/absences/{id}:
+ *   delete:
+ *     summary: Supprimer une absence
+ *     tags: [Absences]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Absence supprimée
+ */
+router.delete(
+  "/:id",
+  authMiddleware,
+  authorizeRoles(UserRole.PROF),
+  (req, res) => absenceController.delete(req, res)
+)
+
 export default router

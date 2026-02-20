@@ -38,9 +38,29 @@ export class CoursService {
       classes: validClasses as any
     });
   }
-  // Dans src/service/CoursService.ts
+// Dans src/service/CoursService.ts
 async findAll() {
   return await this.coursRepository.findAll();
+}
+
+async findById(id: number) {
+  return await this.coursRepository.findById(id);
+}
+
+async update(id: number, data: any) {
+  const cours = await this.coursRepository.findById(id);
+  if (!cours) {
+    throw new Error("Cours non trouvé");
+  }
+  return await this.coursRepository.update(id, data);
+}
+
+async delete(id: number) {
+  const cours = await this.coursRepository.findById(id);
+  if (!cours) {
+    throw new Error("Cours non trouvé");
+  }
+  return await this.coursRepository.delete(id);
 }
 
 }

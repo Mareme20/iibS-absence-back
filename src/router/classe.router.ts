@@ -76,4 +76,64 @@ router.get(
   (req, res) => classeController.findAll(req, res)
 )
 
+/**
+ * @swagger
+ * /api/classes/{id}:
+ *   put:
+ *     summary: Mettre à jour une classe
+ *     tags: [Classes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               libelle: { type: string }
+ *               filiere: { type: string }
+ *               niveau: { type: string }
+ *     responses:
+ *       200:
+ *         description: Classe mise à jour
+ */
+router.put(
+  "/:id",
+  authMiddleware,
+  authorizeRoles(UserRole.RP),
+  (req, res) => classeController.update(req, res)
+)
+
+/**
+ * @swagger
+ * /api/classes/{id}:
+ *   delete:
+ *     summary: Supprimer une classe
+ *     tags: [Classes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Classe supprimée
+ */
+router.delete(
+  "/:id",
+  authMiddleware,
+  authorizeRoles(UserRole.RP),
+  (req, res) => classeController.delete(req, res)
+)
+
 export default router

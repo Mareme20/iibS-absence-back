@@ -34,6 +34,30 @@ export class AbsenceService {
   if (!etudiant) throw new Error("Profil étudiant non trouvé");
 
   return await this.absenceRepo.findByEtudiant(etudiant.id, date);
-}
+  }
+
+  async findAll() {
+    return await this.absenceRepo.findAll();
+  }
+
+  async findById(id: number) {
+    return await this.absenceRepo.findById(id);
+  }
+
+  async update(id: number, data: any) {
+    const absence = await this.absenceRepo.findById(id);
+    if (!absence) {
+      throw new Error("Absence non trouvée");
+    }
+    return await this.absenceRepo.update(id, data);
+  }
+
+  async delete(id: number) {
+    const absence = await this.absenceRepo.findById(id);
+    if (!absence) {
+      throw new Error("Absence non trouvée");
+    }
+    return await this.absenceRepo.delete(id);
+  }
 
 }

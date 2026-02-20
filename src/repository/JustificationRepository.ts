@@ -17,17 +17,30 @@ export class JustificationRepository implements IJustificationRepository {
     return await this.repo.save(justification);
   }
 
+  async findAll(): Promise<Justification[]> {
+    return await this.repo.find({ relations: ["absence", "absence.etudiant", "absence.cours"] });
+  }
+
   async findById(id: number): Promise<Justification | null> {
     return await this.repo.findOne({ 
       where: { id }, 
-      relations: ["absence"] 
+      relations: ["absence", "absence.etudiant", "absence.cours"] 
     });
   }
-  async findByEtudiant(etudiantId: number): Promise<Justification[]> {
-  return await this.repo.find({
-    where: { absence: { etudiant: { id: etudiantId } } },
-    relations: ["absence", "absence.cours"]
-  });
-}
 
+  async update(id: number, data: Partial<Justification>): Promise<Justification> {
+    await this.repo.update(id, data);
+    return await this.findById(id) as Justification;
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.repo.delete(id);
+  }
+
+  async findByEtudiant(etudiantId: number): Promise<Justification[]> {
+    return await this.repo.find({
+      where: { absence: { etudiant: { id: etudiantId } } },
+      relations: ["absence", "absence.cours"]
+    });
+  }
 }

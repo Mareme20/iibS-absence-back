@@ -23,8 +23,20 @@ export class CoursRepository implements ICoursRepository {
       relations: ["professeur", "classes"]
     })
   }
-   async findById(id: number): Promise<Cours | null> {
-    // TypeORM utilise findOneBy ou findOne avec un objet where
-    return await this.repo.findOne({ where: { id } });
+
+  async findById(id: number): Promise<Cours | null> {
+    return await this.repo.findOne({ 
+      where: { id },
+      relations: ["professeur", "classes"]
+    });
+  }
+
+  async update(id: number, data: Partial<Cours>): Promise<Cours> {
+    await this.repo.update(id, data);
+    return await this.findById(id) as Cours;
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.repo.delete(id);
   }
 }

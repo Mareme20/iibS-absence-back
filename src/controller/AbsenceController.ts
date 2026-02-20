@@ -31,4 +31,44 @@ export class AbsenceController {
       return errorResponse(res, message);
     }
   }
+
+  findAll = async (req: Request, res: Response) => {
+    try {
+      const result = await service.findAll();
+      return successResponse(res, result);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
+  findById = async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const result = await service.findById(id);
+      return successResponse(res, result);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
+  update = async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const data = req.body;
+      const result = await service.update(id, data);
+      return successResponse(res, result, "Absence mise à jour", 200);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
+  delete = async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      await service.delete(id);
+      return successResponse(res, null, "Absence supprimée", 200);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
 }

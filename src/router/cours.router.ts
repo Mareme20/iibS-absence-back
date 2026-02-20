@@ -69,4 +69,66 @@ router.get(
   (req, res) => coursController.findAll(req, res)
 )
 
+/**
+ * @swagger
+ * /api/cours/{id}:
+ *   put:
+ *     summary: Mettre à jour un cours
+ *     tags: [Cours]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               module: { type: string }
+ *               date: { type: string, format: date }
+ *               heureDebut: { type: string }
+ *               heureFin: { type: string }
+ *               semestre: { type: string }
+ *     responses:
+ *       200:
+ *         description: Cours mis à jour
+ */
+router.put(
+  "/:id",
+  authMiddleware,
+  authorizeRoles(UserRole.RP),
+  (req, res) => coursController.update(req, res)
+)
+
+/**
+ * @swagger
+ * /api/cours/{id}:
+ *   delete:
+ *     summary: Supprimer un cours
+ *     tags: [Cours]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Cours supprimé
+ */
+router.delete(
+  "/:id",
+  authMiddleware,
+  authorizeRoles(UserRole.RP),
+  (req, res) => coursController.delete(req, res)
+)
+
 export default router

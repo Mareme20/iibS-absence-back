@@ -17,9 +17,22 @@ export class ClasseRepository implements IClasseRepository {
   }
 
   async findAll(): Promise<Classe[]> {
-    return await this.repo.find()
+    return await this.repo.find({ relations: ["cours"] })
   }
-    async findById(id: number): Promise<Classe | null> {
-    return await this.repo.findOne({ where: { id } });
+
+  async findById(id: number): Promise<Classe | null> {
+    return await this.repo.findOne({ 
+      where: { id },
+      relations: ["cours"] 
+    });
+  }
+
+  async update(id: number, data: Partial<Classe>): Promise<Classe> {
+    await this.repo.update(id, data);
+    return await this.findById(id) as Classe;
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.repo.delete(id);
   }
 }

@@ -15,4 +15,21 @@ export class InscriptionRepository implements IInscriptionRepository {
     const inscription = this.repo.create(data)
     return await this.repo.save(inscription)
   }
+
+  async findAll(): Promise<Inscription[]> {
+    return await this.repo.find({
+      relations: ["etudiant", "etudiant.user", "classe"]
+    })
+  }
+
+  async findById(id: number): Promise<Inscription | null> {
+    return await this.repo.findOne({
+      where: { id },
+      relations: ["etudiant", "etudiant.user", "classe"]
+    })
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.repo.delete(id);
+  }
 }

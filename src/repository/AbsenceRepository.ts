@@ -12,24 +12,42 @@ export class AbsenceRepository implements IAbsenceRepository {
     const absence = this.repo.create(data);
     return await this.repo.save(absence);
   }
-  async findById(id: number): Promise<Absence | null> {
-    return await this.repo.findOne({ where: { id } });
+
+  async findAll(): Promise<Absence[]> {
+    return await this.repo.find({ 
+      relations: ["etudiant", "cours", "justification"] 
+    });
   }
 
-  // Implémentation du save pour la mise à jour
+  async findById(id: number): Promise<Absence | null> {
+    return await this.repo.findOne({ 
+      where: { id }, 
+      relations: ["etudiant", "cours", "justification"] 
+    });
+  }
+
   async save(absence: Absence): Promise<Absence> {
     return await this.repo.save(absence);
   }
-  async findByEtudiant(etudiantId: number, date?: string): Promise<Absence[]> {
-  const query = this.repo.createQueryBuilder("absence")
-    .leftJoinAndSelect("absence.cours", "cours")
-    .where("absence.etudiantId = :etudiantId", { etudiantId });
 
-  if (date) {
-    query.andWhere("absence.date = :date", { date });
+  async update(id: number, data: Partial<Absence>): Promise<Absence> {
+    await this.repo.update(id, data);
+    return await this.findById(id) as Absence;
   }
 
-  return await query.getMany();
-}
+  async delete(id: number): Promise<void> {
+    await this.repo.delete(id);
+  }
 
+  async findByEtudiant(etudiantId: number, date?: string): Promise<Absence[]> {
+    const query = this.repo.createQueryBuilder("absence")
+      .leftJoinAndSelect("absence.cours", "cours")
+      .where("absence.etudiantId = :etudiantId", { etudiantId });
+
+    if (date) {
+      query.andWhere("absence.date = :date", { date });
+    }
+
+    return await query.getMany();
+  }
 }
