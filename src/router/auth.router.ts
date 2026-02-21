@@ -16,7 +16,6 @@ const authController = new AuthController(authService);
  *   name: Auth
  *   description: API d'authentification
  */
-
 /**
  * @swagger
  * /api/auth/register:
@@ -34,6 +33,8 @@ const authController = new AuthController(authService);
  *               password: { type: string }
  *               nom: { type: string }
  *               prenom: { type: string }
+ *               role: { type: string, enum: [RP, PROF, ATTACHE, ETUDIANT] }
+ 
  *     responses:
  *       201:
  *         description: Utilisateur créé
