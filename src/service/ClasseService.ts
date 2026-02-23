@@ -1,5 +1,5 @@
 import { IClasseRepository } from "../repository/interfaces/IClasseRepository"
-import { CreateClasseDto } from "../dto/classe.dto"
+import { CreateClasseDto, UpdateClasseDto } from "../dto/classe.dto"
 
 export class ClasseService {
 
@@ -17,7 +17,7 @@ export class ClasseService {
     return await this.classeRepository.findById(id)
   }
 
-  async update(id: number, data: Partial<CreateClasseDto>) {
+  async update(id: number, data: UpdateClasseDto) {
     const classe = await this.classeRepository.findById(id)
     if (!classe) {
       throw new Error("Classe non trouvée")
