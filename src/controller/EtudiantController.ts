@@ -7,7 +7,7 @@ import { InscriptionRepository } from "../repository/InscriptionRepository"
 import { AbsenceRepository } from "../repository/AbsenceRepository" // Ajouté
 import { JustificationRepository } from "../repository/JustificationRepository" // Ajouté
 import { JustificationService } from "../service/JustificationService"
-import { createEtudiantSchema, inscriptionSchema } from "../dto/etudiant.dto"
+import { createEtudiantSchema, inscriptionSchema, updateEtudiantSchema } from "../dto/etudiant.dto"
 import { successResponse, errorResponse } from "../utils/response"
 import { AuthRequest } from "../middleware/auth.middleware"
 
@@ -102,7 +102,7 @@ export class EtudiantController {
   async update(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id as string);
-      const data = req.body;
+      const data = updateEtudiantSchema.parse(req.body);
       const result = await service.update(id, data);
       return successResponse(res, result, "Étudiant mis à jour", 200);
     } catch (error: any) {

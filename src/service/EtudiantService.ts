@@ -53,7 +53,29 @@ export class EtudiantService {
     if (!etudiant) {
       throw new Error("Étudiant non trouvé");
     }
-    return await this.etudiantRepo.update(id, data);
+
+    const payload = { ...data };
+
+    if (!payload.matricule) {
+      delete payload.matricule;
+    }
+
+    if (!payload.adresse) {
+      delete payload.adresse;
+    }
+
+    if (payload.matricule) {
+      const existing = await this.etudiantRepo.findByMatricule(payload.matricule);
+      if (existing && existing.id !== id) {
+        throw new Error("Matricule déjà utilisé");
+      }
+    }
+
+    if (Object.keys(payload).length === 0) {
+      return etudiant;
+    }
+
+    return await this.etudiantRepo.update(id, payload);
   }
 
   async delete(id: number) {

@@ -14,6 +14,14 @@ export const createEtudiantSchema = z.object({
   adresse: z.string()
 })
 
+export const updateEtudiantSchema = z.object({
+  nom: z.string().optional(),
+  prenom: z.string().optional(),
+  email: z.string().email().optional(),
+  matricule: optionalNonEmptyString,
+  adresse: optionalNonEmptyString
+})
+
 
 export const inscriptionSchema = z.object({
   etudiantId: z.number(),
