@@ -1,0 +1,53 @@
+services:
+  backend:
+    build: .
+    container_name: iibs_backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    # On utilise npm run dev pour voir les logs en temps réel dans Docker
+    command: npm run dev 
+    environment:
+      # Utilisation du container_name pour éviter l'erreur ENOTFOUND
+      DB_HOST: iibs_postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: iibs_absence
+      JWT_SECRET: secretkey
+      PORT: 3000
+    networks:
+      - iibs_network
+
+  # Le frontend est commenté pour l'instant comme demandé
+  # frontend:
+  #   build: ../iibS-absence-front
+  #   container_name: iibs_frontend
+  #   ports:
+  #     - "4200:80"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - iibs_network
+
+  db:
+    image: postgres:15
+    container_name: iibs_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: iibs_absence
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - iibs_network
+
+networks:
+  iibs_network:
+    driver: bridge
+
+volumes:
+  pgdata:
