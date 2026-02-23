@@ -2,7 +2,10 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { IUserRepository } from "../repository/interfaces/IUserRepository"
 import { RegisterDto, LoginDto } from "../dto/auth.dto"
-import { User } from "../entity/User"
+import { User, UserRole } from "../entity/User"
+import { AppDataSource } from "../config/data-source"
+import { Etudiant } from "../entity/Etudiant"
+import { generateUniqueMatricule } from "../utils/matricule"
 
 export class AuthService {
 
@@ -18,9 +21,35 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(data.password, 10)
 
-    const user = await this.userRepository.create({
-      ...data,
-      password: hashedPassword
+    const user = await AppDataSource.transaction(async (manager) => {
+      const userRepo = manager.getRepository(User)
+      const etudiantRepo = manager.getRepository(Etudiant)
+
+      const createdUser = userRepo.create({
+        nom: data.nom,
+        prenom: data.prenom,
+        email: data.email,
+        password: hashedPassword,
+        role: data.role
+      })
+
+      const savedUser = await userRepo.save(createdUser)
+
+      if (data.role === UserRole.ETUDIANT) {
+        const matricule = await generateUniqueMatricule(async (candidate) => {
+          const existing = await etudiantRepo.findOne({ where: { matricule: candidate } })
+          return !!existing
+        })
+
+        const etudiant = etudiantRepo.create({
+          matricule,
+          adresse: data.adresse!,
+          user: savedUser
+        })
+        await etudiantRepo.save(etudiant)
+      }
+
+      return savedUser
     })
 
     return user

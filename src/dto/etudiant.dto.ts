@@ -5,7 +5,7 @@ export const createEtudiantSchema = z.object({
   prenom: z.string(),
   email: z.string().email(),
   password: z.string().min(6),
-  matricule: z.string(),
+  matricule: z.string().optional(),
   adresse: z.string()
 })
 

@@ -5,6 +5,7 @@ import { IUserRepository } from "../repository/interfaces/IUserRepository";
 import { IClasseRepository } from "../repository/interfaces/IClasseRepository";
 import { IInscriptionRepository } from "../repository/interfaces/IInscriptionRepository";
 import { IAbsenceRepository } from "../repository/interfaces/IAbsenceRepository"; // <--- Import du repo Absence
+import { generateUniqueMatricule } from "../utils/matricule";
 
 export class EtudiantService {
   constructor(
@@ -17,6 +18,10 @@ export class EtudiantService {
 
   async create(data: any) {
     const hashedPassword = await bcrypt.hash(data.password, 10);
+    const matricule = await generateUniqueMatricule(async (candidate) => {
+      const existing = await this.etudiantRepo.findByMatricule(candidate);
+      return !!existing;
+    });
 
     // 1. Créer l'utilisateur d'abord
     const user = await this.userRepo.create({
@@ -29,7 +34,7 @@ export class EtudiantService {
 
     // 2. Créer l'étudiant lié à l'utilisateur
     return await this.etudiantRepo.create({
-      matricule: data.matricule,
+      matricule,
       adresse: data.adresse,
       user: user
     });
