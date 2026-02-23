@@ -6,7 +6,7 @@ export const createAbsenceSchema = z.object({
   date: z.string(),
   nombreHeures: z.number().min(1)
 })
-
+// Pour les mises à jour partielles, on rend tous les champs optionnels
 export const justifySchema = z.object({
   absenceId: z.number(),
   date: z.string(),
