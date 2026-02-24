@@ -29,6 +29,24 @@ export class InscriptionRepository implements IInscriptionRepository {
     })
   }
 
+  async findByEtudiant(etudiantId: number): Promise<Inscription[]> {
+    return await this.repo.find({
+      where: { etudiant: { id: etudiantId } },
+      relations: ["etudiant", "classe"]
+    })
+  }
+
+  async findByClasse(classeId: number, annee?: string): Promise<Inscription[]> {
+    const where = annee
+      ? { classe: { id: classeId }, annee }
+      : { classe: { id: classeId } };
+
+    return await this.repo.find({
+      where,
+      relations: ["etudiant", "etudiant.user", "classe"]
+    })
+  }
+
   async findByEtudiantAndAnnee(etudiantId: number, annee: string): Promise<Inscription | null> {
     return await this.repo.findOne({
       where: {

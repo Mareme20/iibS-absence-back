@@ -1,6 +1,6 @@
 import { Repository } from "typeorm"
 import { AppDataSource } from "../config/data-source"
-import { User } from "../entity/User"
+import { User, UserRole } from "../entity/User"
 import { IUserRepository } from "./interfaces/IUserRepository"
 
 export class UserRepository implements IUserRepository {
@@ -22,5 +22,9 @@ export class UserRepository implements IUserRepository {
 
   async findById(id: number): Promise<User | null> {
     return await this.repo.findOne({ where: { id } })
+  }
+
+  async findByRole(role: UserRole): Promise<User | null> {
+    return await this.repo.findOne({ where: { role } })
   }
 }

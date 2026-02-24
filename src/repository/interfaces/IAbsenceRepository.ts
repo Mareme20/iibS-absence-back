@@ -7,5 +7,6 @@ export interface IAbsenceRepository {
   save(absence: Absence): Promise<Absence>;
   update(id: number, data: Partial<Absence>): Promise<Absence>;
   delete(id: number): Promise<void>;
+  findByCours(coursId: number, date?: string): Promise<Absence[]>;
   findByEtudiant(etudiantId: number, date?: string): Promise<Absence[]>;
 }

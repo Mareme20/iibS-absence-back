@@ -1,12 +1,11 @@
 import { Router } from "express"
-import { CoursController } from "../controller/CoursController"
 import { authMiddleware } from "../middleware/auth.middleware"
 import { authorizeRoles } from "../middleware/role.middleware"
 import { UserRole } from "../entity/User"
+import { container } from "../bootstrap/container"
 
 const router = Router()
-// 1. Création de l'instance pour accéder aux méthodes non-statiques
-const coursController = new CoursController()
+const { coursController } = container
 
 /**
  * @swagger

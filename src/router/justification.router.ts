@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { JustificationController } from "../controller/JustificationController";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { authorizeRoles } from "../middleware/role.middleware";
 import { UserRole } from "../entity/User";
+import { container } from "../bootstrap/container";
 
 const router = Router();
-const justificationController = new JustificationController();
+const { justificationController } = container;
 
 /**
  * @swagger
@@ -29,6 +29,7 @@ const justificationController = new JustificationController();
 router.get(
   "/",
   authMiddleware,
+  authorizeRoles(UserRole.ATTACHE),
   (req, res) => justificationController.findAll(req, res)
 );
 
@@ -43,6 +44,7 @@ router.get(
 router.get(
   "/mes-justifications",
   authMiddleware,
+  authorizeRoles(UserRole.ETUDIANT),
   (req, res) => justificationController.getMesJustifications(req, res)
 );
 
@@ -67,6 +69,7 @@ router.get(
 router.get(
   "/:id",
   authMiddleware,
+  authorizeRoles(UserRole.ATTACHE),
   (req, res) => justificationController.findById(req, res)
 );
 
@@ -100,6 +103,7 @@ router.get(
 router.put(
   "/:id",
   authMiddleware,
+  authorizeRoles(UserRole.ATTACHE),
   (req, res) => justificationController.update(req, res)
 );
 
@@ -124,6 +128,7 @@ router.put(
 router.delete(
   "/:id",
   authMiddleware,
+  authorizeRoles(UserRole.ATTACHE),
   (req, res) => justificationController.delete(req, res)
 );
 
@@ -159,9 +164,8 @@ router.delete(
 router.put(
   "/:id/traiter",
   authMiddleware,
-  authorizeRoles(UserRole.PROF, UserRole.ATTACHE),
+  authorizeRoles(UserRole.ATTACHE),
   (req, res) => justificationController.traiter(req, res)
 );
 
 export default router;
-

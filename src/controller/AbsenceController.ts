@@ -1,20 +1,10 @@
 import { Request, Response } from "express";
 import { AbsenceService } from "../service/AbsenceService";
-import { AbsenceRepository } from "../repository/AbsenceRepository";
-import { EtudiantRepository } from "../repository/EtudiantRepository";
-import { CoursRepository } from "../repository/CoursRepository";
-import { createAbsenceSchema } from "../dto/absence.dto";
+import { createAbsenceSchema, updateAbsenceSchema } from "../dto/absence.dto";
 import { successResponse, errorResponse } from "../utils/response";
 
-// On instancie les dépendances
-const absenceRepo = new AbsenceRepository();
-const etudiantRepo = new EtudiantRepository();
-const coursRepo = new CoursRepository();
-
-// On injecte les repos dans le service
-const service = new AbsenceService(absenceRepo, etudiantRepo, coursRepo);
-
 export class AbsenceController {
+  constructor(private readonly service: AbsenceService) {}
 
  create = async (req: Request, res: Response) => {
     try {
@@ -22,7 +12,7 @@ export class AbsenceController {
       const data = createAbsenceSchema.parse(req.body);
       
       // Appel au service
-      const result = await service.create(data);
+      const result = await this.service.create(data);
       
       return successResponse(res, result, "Absence created", 201);
     } catch (error: any) {
@@ -34,7 +24,7 @@ export class AbsenceController {
 
   findAll = async (req: Request, res: Response) => {
     try {
-      const result = await service.findAll();
+      const result = await this.service.findAll();
       return successResponse(res, result);
     } catch (error: any) {
       return errorResponse(res, error.message);
@@ -44,7 +34,29 @@ export class AbsenceController {
   findById = async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
-      const result = await service.findById(id);
+      const result = await this.service.findById(id);
+      return successResponse(res, result);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
+  findByCours = async (req: Request, res: Response) => {
+    try {
+      const coursId = parseInt(req.params.coursId as string);
+      const date = req.query.date as string | undefined;
+      const result = await this.service.findByCours(coursId, date);
+      return successResponse(res, result);
+    } catch (error: any) {
+      return errorResponse(res, error.message);
+    }
+  }
+
+  findByEtudiant = async (req: Request, res: Response) => {
+    try {
+      const etudiantId = parseInt(req.params.etudiantId as string);
+      const date = req.query.date as string | undefined;
+      const result = await this.service.findByEtudiant(etudiantId, date);
       return successResponse(res, result);
     } catch (error: any) {
       return errorResponse(res, error.message);
@@ -54,8 +66,8 @@ export class AbsenceController {
   update = async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
-      const data = req.body;
-      const result = await service.update(id, data);
+      const data = updateAbsenceSchema.parse(req.body);
+      const result = await this.service.update(id, data);
       return successResponse(res, result, "Absence mise à jour", 200);
     } catch (error: any) {
       return errorResponse(res, error.message);
@@ -65,7 +77,7 @@ export class AbsenceController {
   delete = async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
-      await service.delete(id);
+      await this.service.delete(id);
       return successResponse(res, null, "Absence supprimée", 200);
     } catch (error: any) {
       return errorResponse(res, error.message);
@@ -75,7 +87,7 @@ export class AbsenceController {
   markAsJustified = async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
-      const result = await service.markAsJustified(id);
+      const result = await this.service.markAsJustified(id);
       return successResponse(res, result, "Absence marquée comme justifiée", 200);
     } catch (error: any) {
       return errorResponse(res, error.message);

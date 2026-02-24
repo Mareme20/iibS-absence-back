@@ -1,17 +1,13 @@
 import { Request, Response } from "express"
 import { StatsService } from "../service/StatsService"
-import { StatsRepository } from "../repository/StatsRepository" // Ajouté
 import { successResponse, errorResponse } from "../utils/response"
 
-// On injecte l'implémentation concrète (Repository) dans le service (Clean Architecture)
-const repository = new StatsRepository()
-const service = new StatsService(repository)
-
 export class StatsController {
+  constructor(private readonly service: StatsService) {}
 
     async coursParProfesseur(req: Request, res: Response) {
     try {
-      const result = await service.coursParProfesseur()
+      const result = await this.service.coursParProfesseur()
       return successResponse(res, result)
     } catch (error: any) {
       return errorResponse(res, error.message)
@@ -20,7 +16,7 @@ export class StatsController {
 
   async coursParClasse(req: Request, res: Response) {
     try {
-      const result = await service.coursParClasse()
+      const result = await this.service.coursParClasse()
       return successResponse(res, result)
     } catch (error: any) {
       return errorResponse(res, error.message)
@@ -29,7 +25,7 @@ export class StatsController {
 
   async top5Absents(req: Request, res: Response) {
     try {
-      const result = await service.top5Absents()
+      const result = await this.service.top5Absents()
       return successResponse(res, result)
     } catch (error: any) {
       return errorResponse(res, error.message)
@@ -38,7 +34,7 @@ export class StatsController {
 
   async etudiantsPlus25Heures(req: Request, res: Response) {
     try {
-      const result = await service.etudiantsPlus25Heures()
+      const result = await this.service.etudiantsPlus25Heures()
       return successResponse(res, result)
     } catch (error: any) {
       return errorResponse(res, error.message)

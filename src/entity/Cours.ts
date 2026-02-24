@@ -30,6 +30,9 @@ export class Cours {
   @Column()
   module!: string
 
+  @Column({ type: "int", default: 1 })
+  nombreHeure!: number
+
   @ManyToOne(() => Professeur)
  professeur!: Professeur
 

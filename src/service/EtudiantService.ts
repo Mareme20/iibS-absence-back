@@ -5,6 +5,7 @@ import { IUserRepository } from "../repository/interfaces/IUserRepository";
 import { IClasseRepository } from "../repository/interfaces/IClasseRepository";
 import { IInscriptionRepository } from "../repository/interfaces/IInscriptionRepository";
 import { IAbsenceRepository } from "../repository/interfaces/IAbsenceRepository"; // <--- Import du repo Absence
+import { ICoursRepository } from "../repository/interfaces/ICoursRepository";
 import { generateUniqueMatricule } from "../utils/matricule";
 
 export class EtudiantService {
@@ -13,7 +14,8 @@ export class EtudiantService {
     private userRepo: IUserRepository,
     private classeRepo: IClasseRepository,
     private inscriptionRepo: IInscriptionRepository,
-    private absenceRepo: IAbsenceRepository // <--- Injecte le repo Absence ici
+    private absenceRepo: IAbsenceRepository, // <--- Injecte le repo Absence ici
+    private coursRepo: ICoursRepository
   ) {}
 
   async create(data: any) {
@@ -87,6 +89,8 @@ export class EtudiantService {
   }
 
   async inscrire(etudiantId: number, classeId: number, annee: string) {
+    this.assertInscriptionPeriodOpen();
+
     const etudiant = await this.etudiantRepo.findById(etudiantId);
     const classe = await this.classeRepo.findById(classeId);
 
@@ -120,6 +124,58 @@ export class EtudiantService {
 
     // 2. On appelle le repo Absence pour récupérer les données (Règle l'erreur TS)
     return await this.absenceRepo.findByEtudiant(etudiant.id, date);
+  }
+
+  async getMesCours(userId: number, dateDebut?: string, dateFin?: string) {
+    const etudiant = await this.etudiantRepo.findByUserId(userId);
+    if (!etudiant) {
+      throw new Error("Profil étudiant non trouvé");
+    }
+
+    const inscriptions = await this.inscriptionRepo.findByEtudiant(etudiant.id);
+    const classeIds = new Set(inscriptions.map((inscription) => inscription.classe.id));
+    if (classeIds.size === 0) {
+      return [];
+    }
+
+    const cours = await this.coursRepo.findAll();
+    const filtered = cours.filter((c) =>
+      (c.classes || []).some((classe) => classeIds.has(classe.id))
+    );
+
+    if (!dateDebut && !dateFin) {
+      return filtered;
+    }
+
+    const start = dateDebut ? new Date(dateDebut) : undefined;
+    const end = dateFin ? new Date(dateFin) : undefined;
+    return filtered.filter((c) => {
+      const d = new Date(c.date);
+      if (start && d < start) return false;
+      if (end && d > end) return false;
+      return true;
+    });
+  }
+
+  private assertInscriptionPeriodOpen() {
+    const startRaw = process.env.INSCRIPTION_START_DATE;
+    const endRaw = process.env.INSCRIPTION_END_DATE;
+
+    // If no period is configured, keep legacy behavior.
+    if (!startRaw || !endRaw) {
+      return;
+    }
+
+    const start = new Date(startRaw);
+    const end = new Date(endRaw);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      throw new Error("Configuration période d'inscription invalide (INSCRIPTION_START_DATE / INSCRIPTION_END_DATE)");
+    }
+
+    const now = new Date();
+    if (now < start || now > end) {
+      throw new Error("La période d'inscription est fermée");
+    }
   }
 
 }

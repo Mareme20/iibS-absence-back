@@ -1,11 +1,11 @@
 import { Router } from "express"
-import { AbsenceController } from "../controller/AbsenceController"
 import { authMiddleware } from "../middleware/auth.middleware"
 import { authorizeRoles } from "../middleware/role.middleware"
 import { UserRole } from "../entity/User"
+import { container } from "../bootstrap/container"
 
 const router = Router()
-const absenceController = new AbsenceController()
+const { absenceController } = container
 
 /**
  * @swagger
@@ -81,6 +81,20 @@ router.get(
   "/",
   authMiddleware,
   (req, res) => absenceController.findAll(req, res)
+)
+
+router.get(
+  "/cours/:coursId",
+  authMiddleware,
+  authorizeRoles(UserRole.ATTACHE, UserRole.RP),
+  (req, res) => absenceController.findByCours(req, res)
+)
+
+router.get(
+  "/etudiant/:etudiantId",
+  authMiddleware,
+  authorizeRoles(UserRole.ATTACHE, UserRole.RP),
+  (req, res) => absenceController.findByEtudiant(req, res)
 )
 
 /**

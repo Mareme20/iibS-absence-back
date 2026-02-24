@@ -32,6 +32,7 @@ export class CoursService {
       date: new Date(data.date),
       heureDebut: data.heureDebut,
       heureFin: data.heureFin,
+      nombreHeure: data.nombreHeure,
       semestre: data.semestre,
       module: data.module,
       professeur: professeur, // C'est maintenant un type 'Professeur', TS est content
@@ -60,8 +61,8 @@ export class CoursService {
     return await this.coursRepository.findByProfesseur(professeur.id);
   }
 // Dans src/service/CoursService.ts
-async findAll() {
-  return await this.coursRepository.findAll();
+async findAll(heureDebut?: string, heureFin?: string) {
+  return await this.coursRepository.findAll(heureDebut, heureFin);
 }
 
 async findById(id: number) {
@@ -92,6 +93,7 @@ async update(id: number, data: any) {
   cours.date = data.date ?? cours.date;
   cours.heureDebut = data.heureDebut ?? cours.heureDebut;
   cours.heureFin = data.heureFin ?? cours.heureFin;
+  cours.nombreHeure = data.nombreHeure ?? cours.nombreHeure;
   cours.semestre = data.semestre ?? cours.semestre;
   cours.module = data.module ?? cours.module;
 

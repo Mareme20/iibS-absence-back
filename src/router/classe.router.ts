@@ -1,12 +1,11 @@
 import { Router } from "express"
-import { ClasseController } from "../controller/ClasseController"
 import { authMiddleware } from "../middleware/auth.middleware"
 import { authorizeRoles } from "../middleware/role.middleware"
 import { UserRole } from "../entity/User"
+import { container } from "../bootstrap/container"
 
 const router = Router()
-// On instancie le contrôleur pour accéder aux méthodes non-statiques
-const classeController = new ClasseController()
+const { classeController } = container
 
 /**
  * @swagger
@@ -109,6 +108,13 @@ router.put(
   authMiddleware,
   authorizeRoles(UserRole.RP),
   (req, res) => classeController.update(req, res)
+)
+
+router.get(
+  "/:id/etudiants",
+  authMiddleware,
+  authorizeRoles(UserRole.RP, UserRole.ATTACHE, UserRole.PROF),
+  (req, res) => classeController.findEtudiantsByClasse(req, res)
 )
 
 /**

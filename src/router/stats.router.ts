@@ -1,12 +1,11 @@
 import { Router } from "express"
-import { StatsController } from "../controller/StatsController"
 import { authMiddleware } from "../middleware/auth.middleware"
 import { authorizeRoles } from "../middleware/role.middleware"
 import { UserRole } from "../entity/User"
+import { container } from "../bootstrap/container"
 
 const router = Router()
-// Instance du contrôleur pour éviter l'erreur membre statique
-const statsController = new StatsController()
+const { statsController } = container
 
 /**
  * @swagger

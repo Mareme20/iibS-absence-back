@@ -4,6 +4,7 @@ export const createCoursSchema = z.object({
   date: z.string(),
   heureDebut: z.string(),
   heureFin: z.string(),
+  nombreHeure: z.number().min(1),
   semestre: z.string(),
   module: z.string(),
   professeurId: z.number(),

@@ -60,7 +60,7 @@ export class JustificationService {
   }
   
 
-  async getMesJustifications(userId: number, statut?: string) {
+  async getMesJustifications(userId: number, dateDebut?: string, dateFin?: string, statut?: string) {
     // On cherche l'étudiant qui possède cet ID utilisateur (issu du JWT)
     const etudiant = await this.etudiantRepo.findByUserId(userId);
     
@@ -68,12 +68,11 @@ export class JustificationService {
       throw new Error("Profil étudiant non trouvé");
     }
 
-    // Si un statut est fourni, utiliser la méthode filtrée
-    if (statut) {
+    if (dateDebut || dateFin || statut) {
       return await this.justificationRepo.findByEtudiantAndFilters(
         etudiant.id,
-        undefined,
-        undefined,
+        dateDebut ? new Date(dateDebut) : undefined,
+        dateFin ? new Date(dateFin) : undefined,
         statut
       );
     }

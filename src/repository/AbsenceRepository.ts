@@ -39,9 +39,25 @@ export class AbsenceRepository implements IAbsenceRepository {
     await this.repo.delete(id);
   }
 
+  async findByCours(coursId: number, date?: string): Promise<Absence[]> {
+    const query = this.repo.createQueryBuilder("absence")
+      .leftJoinAndSelect("absence.etudiant", "etudiant")
+      .leftJoinAndSelect("etudiant.user", "user")
+      .leftJoinAndSelect("absence.cours", "cours")
+      .where("absence.coursId = :coursId", { coursId });
+
+    if (date) {
+      query.andWhere("absence.date = :date", { date });
+    }
+
+    return await query.orderBy("absence.date", "DESC").getMany();
+  }
+
   async findByEtudiant(etudiantId: number, date?: string): Promise<Absence[]> {
     const query = this.repo.createQueryBuilder("absence")
+      .leftJoinAndSelect("absence.etudiant", "etudiant")
       .leftJoinAndSelect("absence.cours", "cours")
+      .leftJoinAndSelect("absence.justification", "justification")
       .where("absence.etudiantId = :etudiantId", { etudiantId });
 
     if (date) {

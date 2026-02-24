@@ -18,13 +18,15 @@ export class JustificationRepository implements IJustificationRepository {
   }
 
   async findAll(): Promise<Justification[]> {
-    return await this.repo.find({ relations: ["absence", "absence.etudiant", "absence.cours"] });
+    return await this.repo.find({
+      relations: ["absence", "absence.etudiant", "absence.etudiant.user", "absence.cours"]
+    });
   }
 
   async findById(id: number): Promise<Justification | null> {
     return await this.repo.findOne({ 
       where: { id }, 
-      relations: ["absence", "absence.etudiant", "absence.cours"] 
+      relations: ["absence", "absence.etudiant", "absence.etudiant.user", "absence.cours"] 
     });
   }
 
@@ -47,7 +49,7 @@ export class JustificationRepository implements IJustificationRepository {
   async findByEtudiant(etudiantId: number): Promise<Justification[]> {
     return await this.repo.find({
       where: { absence: { etudiant: { id: etudiantId } } },
-      relations: ["absence", "absence.cours"]
+      relations: ["absence", "absence.cours", "absence.etudiant", "absence.etudiant.user"]
     });
   }
 
@@ -61,6 +63,7 @@ export class JustificationRepository implements IJustificationRepository {
       .createQueryBuilder("justification")
       .innerJoin("justification.absence", "absence")
       .innerJoin("absence.etudiant", "etudiant")
+      .leftJoinAndSelect("etudiant.user", "user")
       .leftJoinAndSelect("justification.absence.cours", "cours")
       .where("etudiant.id = :etudiantId", { etudiantId });
 

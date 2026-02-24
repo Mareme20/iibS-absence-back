@@ -1,20 +1,16 @@
 import { Request, Response } from "express";
 import { JustificationService } from "../service/JustificationService";
-import { JustificationRepository } from "../repository/JustificationRepository";
-import { AbsenceRepository } from "../repository/AbsenceRepository";
-import { EtudiantRepository } from "../repository/EtudiantRepository";
 import { successResponse, errorResponse } from "../utils/response";
 import { AuthRequest } from "../middleware/auth.middleware";
-
-// Initialisation des repositories
-const justificationRepo = new JustificationRepository();
-const absenceRepo = new AbsenceRepository();
-const etudiantRepo = new EtudiantRepository();
-
-// Initialisation du service
-const service = new JustificationService(justificationRepo, absenceRepo, etudiantRepo);
+import {
+  createJustificationSchema,
+  mesJustificationsQuerySchema,
+  traiterJustificationSchema,
+  updateJustificationSchema
+} from "../dto/justification.dto";
 
 export class JustificationController {
+  constructor(private readonly service: JustificationService) {}
 
   create = async (req: AuthRequest, res: Response) => {
     try {
@@ -22,13 +18,9 @@ export class JustificationController {
       if (!userId) {
         return errorResponse(res, "Utilisateur non authentifié", 401);
       }
-      const { absenceId, date, motif } = req.body;
-      
-      if (!absenceId || !date || !motif) {
-        return errorResponse(res, "Les champs absenceId, date et motif sont requis");
-      }
+      const { absenceId, date, motif } = createJustificationSchema.parse(req.body);
 
-      const result = await service.create({
+      const result = await this.service.create({
         absenceId,
         date,
         motif,
@@ -43,7 +35,7 @@ export class JustificationController {
 
   findAll = async (req: Request, res: Response) => {
     try {
-      const result = await service.findAll();
+      const result = await this.service.findAll();
       return successResponse(res, result);
     } catch (error: any) {
       return errorResponse(res, error.message);
@@ -53,7 +45,7 @@ export class JustificationController {
   findById = async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
-      const result = await service.findById(id);
+      const result = await this.service.findById(id);
       return successResponse(res, result);
     } catch (error: any) {
       return errorResponse(res, error.message);
@@ -63,8 +55,8 @@ export class JustificationController {
   update = async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
-      const data = req.body;
-      const result = await service.update(id, data);
+      const data = updateJustificationSchema.parse(req.body);
+      const result = await this.service.update(id, data);
       return successResponse(res, result, "Justification mise à jour", 200);
     } catch (error: any) {
       return errorResponse(res, error.message);
@@ -74,7 +66,7 @@ export class JustificationController {
   delete = async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
-      await service.delete(id);
+      await this.service.delete(id);
       return successResponse(res, null, "Justification supprimée", 200);
     } catch (error: any) {
       return errorResponse(res, error.message);
@@ -84,8 +76,8 @@ export class JustificationController {
   traiter = async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
-      const { statut } = req.body;
-      const result = await service.traiter(id, statut);
+      const { statut } = traiterJustificationSchema.parse(req.body);
+      const result = await this.service.traiter(id, statut);
       return successResponse(res, result, "Justification traitée", 200);
     } catch (error: any) {
       return errorResponse(res, error.message);
@@ -98,7 +90,8 @@ export class JustificationController {
       if (!userId) {
         return errorResponse(res, "Utilisateur non authentifié", 401);
       }
-      const result = await service.getMesJustifications(userId);
+      const { dateDebut, dateFin, statut } = mesJustificationsQuerySchema.parse(req.query);
+      const result = await this.service.getMesJustifications(userId, dateDebut, dateFin, statut);
       return successResponse(res, result);
     } catch (error: any) {
       return errorResponse(res, error.message);

@@ -1,12 +1,11 @@
 import { Router } from "express"
-import { EtudiantController } from "../controller/EtudiantController"
 import { authMiddleware } from "../middleware/auth.middleware"
 import { authorizeRoles } from "../middleware/role.middleware"
 import { UserRole } from "../entity/User"
+import { container } from "../bootstrap/container"
 
 const router = Router()
-// On instancie le contrôleur pour supporter l'injection de dépendances
-const etudiantController = new EtudiantController()
+const { etudiantController } = container
 
 /**
  * @swagger
@@ -92,7 +91,12 @@ router.post(
  *         schema: { type: string, format: date }
  *         description: Filtrer par date (optionnel)
  */
-router.get("/mes-absences", authMiddleware, (req, res) => etudiantController.getMesAbsences(req, res));
+router.get(
+  "/mes-absences",
+  authMiddleware,
+  authorizeRoles(UserRole.ETUDIANT),
+  (req, res) => etudiantController.getMesAbsences(req, res)
+);
 
 /**
  * @swagger
@@ -102,7 +106,19 @@ router.get("/mes-absences", authMiddleware, (req, res) => etudiantController.get
  *     tags: [Étudiants]
  *     security: [{ bearerAuth: [] }]
  */
-router.get("/mes-justifications", authMiddleware, (req, res) => etudiantController.getMesJustifications(req, res));
+router.get(
+  "/mes-justifications",
+  authMiddleware,
+  authorizeRoles(UserRole.ETUDIANT),
+  (req, res) => etudiantController.getMesJustifications(req, res)
+);
+
+router.get(
+  "/mes-cours",
+  authMiddleware,
+  authorizeRoles(UserRole.ETUDIANT),
+  (req, res) => etudiantController.getMesCours(req, res)
+);
 
 /**
  * @swagger
@@ -126,7 +142,12 @@ router.get("/mes-justifications", authMiddleware, (req, res) => etudiantControll
  *       201:
  *         description: Justification soumise avec succès
  */
-router.post("/justifier", authMiddleware, (req, res) => etudiantController.justifier(req, res));
+router.post(
+  "/justifier",
+  authMiddleware,
+  authorizeRoles(UserRole.ETUDIANT),
+  (req, res) => etudiantController.justifier(req, res)
+);
 
 /**
  * @swagger

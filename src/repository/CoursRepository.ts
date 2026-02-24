@@ -21,10 +21,20 @@ export class CoursRepository implements ICoursRepository {
     return await this.repo.save(cours)
   }
 
-  async findAll(): Promise<Cours[]> {
-    return await this.repo.find({
-      relations: ["professeur", "classes"]
-    })
+  async findAll(heureDebut?: string, heureFin?: string): Promise<Cours[]> {
+    const query = this.repo.createQueryBuilder("cours")
+      .leftJoinAndSelect("cours.professeur", "professeur")
+      .leftJoinAndSelect("cours.classes", "classes");
+
+    if (heureDebut) {
+      query.andWhere("cours.heureDebut >= :heureDebut", { heureDebut });
+    }
+
+    if (heureFin) {
+      query.andWhere("cours.heureFin <= :heureFin", { heureFin });
+    }
+
+    return await query.orderBy("cours.date", "DESC").getMany();
   }
 
   async findById(id: number): Promise<Cours | null> {

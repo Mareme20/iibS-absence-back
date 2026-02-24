@@ -23,6 +23,14 @@ export const registerSchema = z.object({
     })
   }
 
+  if (data.role !== UserRole.RP && data.role !== UserRole.ATTACHE) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["role"],
+      message: "Ce endpoint ne permet de créer que des comptes RP ou ATTACHE"
+    })
+  }
+
   // Active ceci si tu veux matricule obligatoire pour certains rôles
   // if (data.role === UserRole.ENSEIGNANT && !data.matricule) {
   //   ctx.addIssue({
