@@ -21,7 +21,8 @@ export const app = express();
  */
 const defaultAllowedOrigins = [
   "http://localhost:4200",
-  "https://iib-s-absence-front.vercel.app"
+  "https://iib-s-absence-front.vercel.app",
+  "https://iibs-absence-front.vercel.app"
 ];
 
 const configuredOrigins = (process.env.CORS_ORIGINS || "")
@@ -44,11 +45,18 @@ app.use(
         return callback(null, true);
       }
 
+      // Allow all vercel.app domains for production
+      if (/^https:\/\/.*\.vercel\.app$/.test(origin)) {
+        return callback(null, true);
+      }
+
       return callback(new Error(`CORS blocked for origin: ${origin}`), false);
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "Origin", "X-Requested-With", "Accept"],
+    exposedHeaders: ["Content-Length", "Content-Type"],
+    credentials: true,
+    optionsSuccessStatus: 204
   })
 );
 
